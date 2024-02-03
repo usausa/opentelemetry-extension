@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7C008EA7-BBCA-4BE0-B653-1B37E78AAD52}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		Analyzers.ruleset = Analyzers.ruleset
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		LICENSE = LICENSE
+		OpenTelemetryExtension.sln.DotSettings = OpenTelemetryExtension.sln.DotSettings
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.Console", "Example.Console\Example.Console.csproj", "{CD952FAC-BCB9-40C3-9214-9A91B9A0B1D4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CD952FAC-BCB9-40C3-9214-9A91B9A0B1D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD952FAC-BCB9-40C3-9214-9A91B9A0B1D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD952FAC-BCB9-40C3-9214-9A91B9A0B1D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD952FAC-BCB9-40C3-9214-9A91B9A0B1D4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BEE7B975-6C11-464B-A25C-976957DF0307}
+	EndGlobalSection
+EndGlobal
