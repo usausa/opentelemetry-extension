@@ -1,1 +1,1 @@
-# opentelemetry-instrument
+# opentelemetry-extensions
