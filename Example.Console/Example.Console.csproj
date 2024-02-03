@@ -2,12 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <CodeAnalysisRuleSet>..\Analyzers.ruleset</CodeAnalysisRuleSet>
     <UserSecretsId>dotnet-Example.Console-14756bb8-ddc0-4c6f-ab7e-777c02a1969b</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="OpenTelemetry.Exporter.Prometheus.HttpListener" Version="1.7.0-rc.1" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.7.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
   </ItemGroup>
+
 </Project>

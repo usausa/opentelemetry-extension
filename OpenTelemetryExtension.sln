@@ -18,6 +18,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.Console", "Example.Console\Example.Console.csproj", "{CD952FAC-BCB9-40C3-9214-9A91B9A0B1D4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTelemetryExtension.Instrumentation.HardwareMonitor", "OpenTelemetryExtension.Instrumentation.HardwareMonitor\OpenTelemetryExtension.Instrumentation.HardwareMonitor.csproj", "{6B7F136A-1241-4F5B-BDE0-C59E1C38B866}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTelemetryExtension.Instrumentation.SensorOmron", "OpenTelemetryExtension.Instrumentation.SensorOmron\OpenTelemetryExtension.Instrumentation.SensorOmron.csproj", "{7002CF95-8503-43EA-86C0-1EF5B02DABFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +32,14 @@ Global
 		{CD952FAC-BCB9-40C3-9214-9A91B9A0B1D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD952FAC-BCB9-40C3-9214-9A91B9A0B1D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD952FAC-BCB9-40C3-9214-9A91B9A0B1D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B7F136A-1241-4F5B-BDE0-C59E1C38B866}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B7F136A-1241-4F5B-BDE0-C59E1C38B866}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B7F136A-1241-4F5B-BDE0-C59E1C38B866}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B7F136A-1241-4F5B-BDE0-C59E1C38B866}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7002CF95-8503-43EA-86C0-1EF5B02DABFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7002CF95-8503-43EA-86C0-1EF5B02DABFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7002CF95-8503-43EA-86C0-1EF5B02DABFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7002CF95-8503-43EA-86C0-1EF5B02DABFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
