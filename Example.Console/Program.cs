@@ -1,5 +1,8 @@
 using OpenTelemetry.Metrics;
 
+using OpenTelemetryExtension.Instrumentation.HardwareMonitor;
+using OpenTelemetryExtension.Instrumentation.SensorOmron;
+
 using Serilog;
 
 Directory.SetCurrentDirectory(AppContext.BaseDirectory);
@@ -23,10 +26,9 @@ builder.Services
     .AddOpenTelemetry()
     .WithMetrics(metrics =>
     {
-        // TODO
-        //metrics
-        //    .AddHadwareMonitorInstrumentation()
-        //    .AddSendorOmronInstrumentation();
+        metrics
+            .AddHardwareMonitorInstrumentation()
+            .AddSensorOmronInstrumentation("COM12");
 
         // http://localhost:9464/metrics
         metrics.AddPrometheusHttpListener();
