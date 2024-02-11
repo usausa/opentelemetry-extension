@@ -1,7 +1,24 @@
 using OpenTelemetry.Metrics;
 
+using Serilog;
+
+Directory.SetCurrentDirectory(AppContext.BaseDirectory);
+
 var builder = Host.CreateApplicationBuilder(args);
 
+// Service
+builder.Services
+    .AddWindowsService()
+    .AddSystemd();
+
+// Logging
+builder.Logging.ClearProviders();
+builder.Services.AddSerilog(options =>
+{
+    options.ReadFrom.Configuration(builder.Configuration);
+});
+
+// Metrics
 builder.Services
     .AddOpenTelemetry()
     .WithMetrics(metrics =>
@@ -16,4 +33,5 @@ builder.Services
     });
 
 var host = builder.Build();
+
 host.Run();
