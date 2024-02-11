@@ -22,7 +22,7 @@ builder.Build().Run();
 
 ## OpenTelemetryExtension.Instrumentation.SensorOmron
 
-![Grafana](https://github.com/usausa/OpenTelemetryExtension/blob/master/Document/sensor.png)
+![Grafana](https://github.com/usausa/opentelemetry-extension/blob/main/Document/sensor.png)
 
 ## OpenTelemetryExtension.Instrumentation.HardwareMonitor
 
