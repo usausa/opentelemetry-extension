@@ -22,6 +22,8 @@ builder.Build().Run();
 
 ## OpenTelemetryExtension.Instrumentation.SensorOmron
 
+[![NuGet Badge](https://buildstats.info/nuget/OpenTelemetryExtension.Instrumentation.SensorOmron)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.SensorOmron/)
+
 ![Grafana](https://github.com/usausa/opentelemetry-extension/blob/main/Document/sensor.png)
 
 ## OpenTelemetryExtension.Instrumentation.HardwareMonitor
