@@ -30,7 +30,6 @@ internal sealed class HardwareMonitorMetrics : IDisposable
             IsMemoryEnabled = options.IsMemoryEnabled,
             IsMotherboardEnabled = options.IsMotherboardEnabled,
             IsNetworkEnabled = options.IsNetworkEnabled,
-            IsPsuEnabled = options.IsPsuEnabled,
             IsStorageEnabled = options.IsStorageEnabled
         };
         computer.Open();
@@ -106,7 +105,6 @@ internal sealed class HardwareMonitorMetrics : IDisposable
                 () => MeasureMemory(
                     memoryDataSensors.First(x => x.Name == "Memory Available"),
                     memoryDataSensors.First(x => x.Name == "Virtual Memory Available")),
-                unit: "{GB}",
                 description: "Memory available.");
         }
 

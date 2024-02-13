@@ -18,7 +18,7 @@ public sealed class HardwareMonitorInstrumentationOptions
 
     public bool IsNetworkEnabled { get; set; } = true;
 
-    public bool IsPsuEnabled { get; set; } = true;
+    //public bool IsPsuEnabled { get; set; } = true;
 
     public bool IsStorageEnabled { get; set; } = true;
 }

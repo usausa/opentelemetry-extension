@@ -28,4 +28,10 @@ builder.Build().Run();
 
 ## OpenTelemetryExtension.Instrumentation.HardwareMonitor
 
-(TODO)
+- [X] Memory
+- [ ] Network
+- [ ] Storage
+- [ ] Battery
+- [ ] I/O
+- [ ] Cpu
+- [ ] Gpu
