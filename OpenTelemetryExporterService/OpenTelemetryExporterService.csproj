@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <CodeAnalysisRuleSet>..\Analyzers.ruleset</CodeAnalysisRuleSet>
     <UserSecretsId>dotnet-Example.Console-14756bb8-ddc0-4c6f-ab7e-777c02a1969b</UserSecretsId>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>
