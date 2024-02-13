@@ -3,6 +3,7 @@ namespace OpenTelemetryExporterService.Settings;
 using OpenTelemetryExtension.Instrumentation.HardwareMonitor;
 using OpenTelemetryExtension.Instrumentation.SensorOmron;
 
+#pragma warning disable CA1819
 public sealed class ServiceSetting
 {
     public string[] EndPoints { get; set; } = default!;
@@ -17,3 +18,4 @@ public sealed class ServiceSetting
 
     public SensorOmronInstrumentationOptions Sensor { get; set; } = default!;
 }
+#pragma warning restore CA1819
