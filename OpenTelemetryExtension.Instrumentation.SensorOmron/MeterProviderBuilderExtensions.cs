@@ -15,4 +15,10 @@ public static class MeterProviderBuilderExtensions
         builder.AddMeter(SensorOmronMetrics.MeterName);
         return builder.AddInstrumentation(() => new SensorOmronMetrics(options));
     }
+
+    public static MeterProviderBuilder AddSensorOmronInstrumentation(this MeterProviderBuilder builder, SensorOmronInstrumentationOptions options)
+    {
+        builder.AddMeter(SensorOmronMetrics.MeterName);
+        return builder.AddInstrumentation(() => new SensorOmronMetrics(options));
+    }
 }

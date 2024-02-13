@@ -15,4 +15,10 @@ public static class MeterProviderBuilderExtensions
         builder.AddMeter(HardwareMonitorMetrics.MeterName);
         return builder.AddInstrumentation(() => new HardwareMonitorMetrics(options));
     }
+
+    public static MeterProviderBuilder AddHardwareMonitorInstrumentation(this MeterProviderBuilder builder, HardwareMonitorInstrumentationOptions options)
+    {
+        builder.AddMeter(HardwareMonitorMetrics.MeterName);
+        return builder.AddInstrumentation(() => new HardwareMonitorMetrics(options));
+    }
 }
