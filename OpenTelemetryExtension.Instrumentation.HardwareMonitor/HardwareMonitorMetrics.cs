@@ -155,7 +155,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         }
 
         // Network Speed
-        if (networkDataSensors.Count > 0)
+        if (networkThroughputSensors.Count > 0)
         {
             MeterInstance.CreateObservableCounter(
                 "network.speed",
