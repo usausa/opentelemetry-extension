@@ -37,6 +37,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
         // TODO
         SetupMemoryMeasurement();
+        SetupNetworkMeasurement();
 
         timer = new Timer(Update, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(options.Interval));
     }
@@ -129,6 +130,83 @@ internal sealed class HardwareMonitorMetrics : IDisposable
                 new Measurement<double>(ToValue(physicalMemory), new KeyValuePair<string, object?>[] { new("type", "physical") }),
                 new Measurement<double>(ToValue(virtualMemory), new KeyValuePair<string, object?>[] { new("type", "virtual") })
             ];
+        }
+    }
+
+    //--------------------------------------------------------------------------------
+    // Memory
+    //--------------------------------------------------------------------------------
+
+    private void SetupNetworkMeasurement()
+    {
+        var networkDataSensors = EnumerableSensors(HardwareType.Network, SensorType.Data);
+        var networkThroughputSensors = EnumerableSensors(HardwareType.Network, SensorType.Throughput);
+        var networkLoadSensors = EnumerableSensors(HardwareType.Network, SensorType.Load);
+
+        // Network Bytes
+        if (networkDataSensors.Count > 0)
+        {
+            MeterInstance.CreateObservableCounter(
+                "network.bytes",
+                () => MeasureNetwork(
+                    networkDataSensors.Where(x => x.Name == "Data Uploaded").ToArray(),
+                    networkDataSensors.Where(x => x.Name == "Data Downloaded").ToArray()),
+                description: "Network bytes.");
+        }
+
+        // Network Speed
+        if (networkDataSensors.Count > 0)
+        {
+            MeterInstance.CreateObservableCounter(
+                "network.speed",
+                () => MeasureNetwork(
+                    networkThroughputSensors.Where(x => x.Name == "Upload Speed").ToArray(),
+                    networkThroughputSensors.Where(x => x.Name == "Download Speed").ToArray()),
+                description: "Network speed.");
+        }
+
+        // Network Load
+        if (networkLoadSensors.Count > 0)
+        {
+            MeterInstance.CreateObservableCounter(
+                "network.load",
+                () => MeasureNetwork(
+                    networkLoadSensors.ToArray()),
+                description: "Network load.");
+        }
+    }
+
+    private Measurement<double>[] MeasureNetwork(ISensor[] uploadSensors, ISensor[] downloadSensors)
+    {
+        lock (computer)
+        {
+            var values = new Measurement<double>[uploadSensors.Length + downloadSensors.Length];
+
+            for (var i = 0; i < uploadSensors.Length; i++)
+            {
+                var uploadSensor = uploadSensors[i];
+                var downloadSensor = downloadSensors[i];
+                values[i * 2] = new Measurement<double>(ToValue(uploadSensor), new("name", uploadSensor.Hardware.Name), new("type", "upload"));
+                values[(i * 2) + 1] = new Measurement<double>(ToValue(downloadSensor), new("name", downloadSensor.Hardware.Name), new("type", "download"));
+            }
+
+            return values;
+        }
+    }
+
+    private Measurement<double>[] MeasureNetwork(ISensor[] sensors)
+    {
+        lock (computer)
+        {
+            var values = new Measurement<double>[sensors.Length];
+
+            for (var i = 0; i < sensors.Length; i++)
+            {
+                var sensor = sensors[i];
+                values[i] = new Measurement<double>(ToValue(sensor), new KeyValuePair<string, object?>[] { new("name", sensor.Hardware.Name) });
+            }
+
+            return values;
         }
     }
 }
