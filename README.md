@@ -29,7 +29,7 @@ builder.Build().Run();
 ## OpenTelemetryExtension.Instrumentation.HardwareMonitor
 
 - [X] Memory
-- [ ] Network
+- [X] Network
 - [ ] Storage
 - [ ] Battery
 - [ ] I/O
