@@ -36,10 +36,10 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         computer.Accept(updateVisitor);
 
         // TODO Battery
-        // TODO I/O
         // TODO CPU
         // TODO GPU
         SetupMemoryMeasurement();
+        SetupIoMeasurement();
         SetupNetworkMeasurement();
         SetupStorageMeasurement();
 
@@ -95,7 +95,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         if (dataSensors.Count > 0)
         {
             MeterInstance.CreateObservableUpDownCounter(
-                "memory.used",
+                "hardware.memory.used",
                 () => MeasureMemory(
                     dataSensors.First(static x => x.Name == "Memory Used"),
                     dataSensors.First(static x => x.Name == "Virtual Memory Used")),
@@ -106,7 +106,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         if (dataSensors.Count > 0)
         {
             MeterInstance.CreateObservableUpDownCounter(
-                "memory.available",
+                "hardware.memory.available",
                 () => MeasureMemory(
                     dataSensors.First(static x => x.Name == "Memory Available"),
                     dataSensors.First(static x => x.Name == "Virtual Memory Available")),
@@ -117,7 +117,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         if (loadSensors.Count > 0)
         {
             MeterInstance.CreateObservableUpDownCounter(
-                "memory.load",
+                "hardware.memory.load",
                 () => MeasureMemory(
                     loadSensors.First(static x => x.Name == "Memory"),
                     loadSensors.First(static x => x.Name == "Virtual Memory")),
@@ -138,6 +138,70 @@ internal sealed class HardwareMonitorMetrics : IDisposable
     }
 
     //--------------------------------------------------------------------------------
+    // I/O
+    //--------------------------------------------------------------------------------
+
+    private void SetupIoMeasurement()
+    {
+        var controlSensors = EnumerableSensors(HardwareType.SuperIO, SensorType.Control).ToArray();
+        var fanSensors = EnumerableSensors(HardwareType.SuperIO, SensorType.Control).ToArray();
+        var temperatureSensors = EnumerableSensors(HardwareType.SuperIO, SensorType.Control).ToArray();
+        var voltageSensors = EnumerableSensors(HardwareType.SuperIO, SensorType.Control).ToArray();
+
+        // I/O control
+        if (controlSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.io.control",
+                () => MeasureIo(controlSensors),
+                description: "I/O control.");
+        }
+
+        // I/O fan
+        if (fanSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.io.fan",
+                () => MeasureIo(fanSensors),
+                description: "I/O fan.");
+        }
+
+        // I/O temperature
+        if (temperatureSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.io.temperature",
+                () => MeasureIo(temperatureSensors),
+                description: "I/O temperature.");
+        }
+
+        // I/O voltage
+        if (voltageSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.io.voltage",
+                () => MeasureIo(voltageSensors),
+                description: "I/O voltage.");
+        }
+    }
+
+    private Measurement<double>[] MeasureIo(ISensor[] sensors)
+    {
+        lock (computer)
+        {
+            var values = new Measurement<double>[sensors.Length];
+
+            for (var i = 0; i < sensors.Length; i++)
+            {
+                var sensor = sensors[i];
+                values[i] = new Measurement<double>(ToValue(sensor), new KeyValuePair<string, object?>[] { new("name", sensor.Name) });
+            }
+
+            return values;
+        }
+    }
+
+    //--------------------------------------------------------------------------------
     // Network
     //--------------------------------------------------------------------------------
 
@@ -151,7 +215,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         if (dataSensors.Count > 0)
         {
             MeterInstance.CreateObservableCounter(
-                "network.bytes",
+                "hardware.network.bytes",
                 () => MeasureNetwork(
                     dataSensors.Where(static x => x.Name == "Data Downloaded").ToArray(),
                     dataSensors.Where(static x => x.Name == "Data Uploaded").ToArray()),
@@ -162,7 +226,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         if (throughputSensors.Count > 0)
         {
             MeterInstance.CreateObservableUpDownCounter(
-                "network.speed",
+                "hardware.network.speed",
                 () => MeasureNetwork(
                     throughputSensors.Where(static x => x.Name == "Download Speed").ToArray(),
                     throughputSensors.Where(static x => x.Name == "Upload Speed").ToArray()),
@@ -173,7 +237,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         if (loadSensors.Length > 0)
         {
             MeterInstance.CreateObservableUpDownCounter(
-                "network.load",
+                "hardware.network.load",
                 () => MeasureNetwork(loadSensors),
                 description: "Network load.");
         }
@@ -233,7 +297,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         if (loadUsedSensors.Length > 0)
         {
             MeterInstance.CreateObservableUpDownCounter(
-                "storage.used",
+                "hardware.storage.used",
                 () => MeasureStorage(loadUsedSensors),
                 description: "Storage used.");
         }
@@ -244,7 +308,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         if ((dataReadSensors.Length > 0) || (dataWriteSensors.Length > 0))
         {
             MeterInstance.CreateObservableUpDownCounter(
-                "storage.bytes",
+                "hardware.storage.bytes",
                 () => MeasureStorage(dataReadSensors, dataWriteSensors),
                 description: "Storage bytes.");
         }
@@ -253,7 +317,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         if (throughputSensors.Count > 0)
         {
             MeterInstance.CreateObservableUpDownCounter(
-                "storage.speed",
+                "hardware.storage.speed",
                 () => MeasureStorage(
                     throughputSensors.Where(static x => x.Name == "Read Rate").ToArray(),
                     throughputSensors.Where(static x => x.Name == "Write Rate").ToArray()),
@@ -264,7 +328,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         if (temperatureSensors.Length > 0)
         {
             MeterInstance.CreateObservableUpDownCounter(
-                "storage.temperature",
+                "hardware.storage.temperature",
                 () => MeasureStorage(temperatureSensors),
                 description: "Storage temperature.");
         }
@@ -274,7 +338,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         if (levelLifeSensors.Length > 0)
         {
             MeterInstance.CreateObservableUpDownCounter(
-                "storage.life",
+                "hardware.storage.life",
                 () => MeasureStorageLife(levelLifeSensors),
                 description: "Storage life.");
         }
@@ -284,7 +348,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         if (factorAmplificationSensors.Length > 0)
         {
             MeterInstance.CreateObservableUpDownCounter(
-                "storage.amplification",
+                "hardware.storage.amplification",
                 () => MeasureStorageLife(factorAmplificationSensors),
                 description: "Storage amplification.");
         }
@@ -294,7 +358,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         if (levelSpareSensors.Length > 0)
         {
             MeterInstance.CreateObservableUpDownCounter(
-                "storage.spare",
+                "hardware.storage.spare",
                 () => MeasureStorageLife(levelSpareSensors),
                 description: "Storage spare.");
         }

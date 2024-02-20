@@ -30,8 +30,8 @@ builder.Build().Run();
 
 - [X] Memory
 - [X] Network
-- [ ] Storage
+- [X] Storage (limited)
 - [ ] Battery
-- [ ] I/O
+- [X] I/O
 - [ ] Cpu
 - [ ] Gpu
