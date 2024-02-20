@@ -24,9 +24,13 @@ builder.Build().Run();
 
 [![NuGet Badge](https://buildstats.info/nuget/OpenTelemetryExtension.Instrumentation.SensorOmron)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.SensorOmron/)
 
+for [2JCIE-BU](https://www.fa.omron.co.jp/products/family/3724/lineup.html)
+
 ![Grafana](https://github.com/usausa/opentelemetry-extension/blob/main/Document/sensor.png)
 
 ## OpenTelemetryExtension.Instrumentation.HardwareMonitor
+
+[![NuGet Badge](https://buildstats.info/nuget/OpenTelemetryExtension.Instrumentation.HardwareMonitor)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.HardwareMonitor/)
 
 - [X] Memory
 - [X] Network
