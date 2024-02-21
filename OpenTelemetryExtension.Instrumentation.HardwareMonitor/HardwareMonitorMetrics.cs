@@ -36,7 +36,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         computer.Accept(updateVisitor);
 
         SetupBatteryMeasurement();
-        // TODO CPU
+        SetupCpuMeasurement();
         // TODO GPU
         SetupIoMeasurement();
         SetupMemoryMeasurement();
@@ -91,6 +91,22 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         lock (computer)
         {
             return ToValue(sensor);
+        }
+    }
+
+    private Measurement<double>[] MeasureSensor(ISensor[] sensors)
+    {
+        lock (computer)
+        {
+            var values = new Measurement<double>[sensors.Length];
+
+            for (var i = 0; i < sensors.Length; i++)
+            {
+                var sensor = sensors[i];
+                values[i] = new Measurement<double>(ToValue(sensor), new KeyValuePair<string, object?>[] { new("name", sensor.Name) });
+            }
+
+            return values;
         }
     }
 
@@ -189,6 +205,82 @@ internal sealed class HardwareMonitorMetrics : IDisposable
     }
 
     //--------------------------------------------------------------------------------
+    // CPU
+    //--------------------------------------------------------------------------------
+
+    private void SetupCpuMeasurement()
+    {
+        var loadSensors = EnumerableSensors(HardwareType.Cpu, SensorType.Load)
+            .Where(static x => x.Name.StartsWith("CPU Core #", StringComparison.Ordinal))
+            .ToArray();
+        var clockSensors = EnumerableSensors(HardwareType.Cpu, SensorType.Clock)
+            .Where(static x => !x.Name.Contains("Effective", StringComparison.Ordinal))
+            .ToArray();
+        var temperatureSensors = EnumerableSensors(HardwareType.Cpu, SensorType.Temperature)
+            .Where(static x => !x.Name.EndsWith("Distance to TjMax", StringComparison.Ordinal) &&
+                               (x.Name != "Core Max") &&
+                               (x.Name != "Core Average"))
+            .ToArray();
+        var voltageSensors = EnumerableSensors(HardwareType.Cpu, SensorType.Voltage).ToArray();
+        var currentSensors = EnumerableSensors(HardwareType.Cpu, SensorType.Current).ToArray();
+        var powerSensors = EnumerableSensors(HardwareType.Cpu, SensorType.Power).ToArray();
+
+        // CPU load
+        if (loadSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.cpu.load",
+                () => MeasureSensor(loadSensors),
+                description: "CPU load.");
+        }
+
+        // CPU clock
+        if (clockSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.cpu.clock",
+                () => MeasureSensor(clockSensors),
+                description: "CPU clock.");
+        }
+
+        // CPU temperature
+        if (temperatureSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.cpu.temperature",
+                () => MeasureSensor(temperatureSensors),
+                description: "CPU temperature.");
+        }
+
+        // CPU voltage
+        if (voltageSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.cpu.voltage",
+                () => MeasureSensor(voltageSensors),
+                description: "CPU voltage.");
+        }
+
+        // CPU current
+        if (currentSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.cpu.current",
+                () => MeasureSensor(currentSensors),
+                description: "CPU current.");
+        }
+
+        // CPU power
+        if (powerSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.cpu.power",
+                () => MeasureSensor(powerSensors),
+                description: "CPU power.");
+        }
+    }
+
+    //--------------------------------------------------------------------------------
     // I/O
     //--------------------------------------------------------------------------------
 
@@ -204,7 +296,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         {
             MeterInstance.CreateObservableUpDownCounter(
                 "hardware.io.control",
-                () => MeasureIo(controlSensors),
+                () => MeasureSensor(controlSensors),
                 description: "I/O control.");
         }
 
@@ -213,7 +305,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         {
             MeterInstance.CreateObservableUpDownCounter(
                 "hardware.io.fan",
-                () => MeasureIo(fanSensors),
+                () => MeasureSensor(fanSensors),
                 description: "I/O fan.");
         }
 
@@ -222,7 +314,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         {
             MeterInstance.CreateObservableUpDownCounter(
                 "hardware.io.temperature",
-                () => MeasureIo(temperatureSensors),
+                () => MeasureSensor(temperatureSensors),
                 description: "I/O temperature.");
         }
 
@@ -231,24 +323,8 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         {
             MeterInstance.CreateObservableUpDownCounter(
                 "hardware.io.voltage",
-                () => MeasureIo(voltageSensors),
+                () => MeasureSensor(voltageSensors),
                 description: "I/O voltage.");
-        }
-    }
-
-    private Measurement<double>[] MeasureIo(ISensor[] sensors)
-    {
-        lock (computer)
-        {
-            var values = new Measurement<double>[sensors.Length];
-
-            for (var i = 0; i < sensors.Length; i++)
-            {
-                var sensor = sensors[i];
-                values[i] = new Measurement<double>(ToValue(sensor), new KeyValuePair<string, object?>[] { new("name", sensor.Name) });
-            }
-
-            return values;
         }
     }
 
