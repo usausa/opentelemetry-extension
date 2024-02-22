@@ -37,7 +37,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
         SetupBatteryMeasurement();
         SetupCpuMeasurement();
-        // TODO GPU
+        SetupGpuMeasurement();
         SetupIoMeasurement();
         SetupMemoryMeasurement();
         SetupStorageMeasurement();
@@ -61,7 +61,18 @@ internal sealed class HardwareMonitorMetrics : IDisposable
     }
 
     private IEnumerable<ISensor> EnumerableSensors(HardwareType hardwareType, SensorType sensorType) =>
-        computer.Hardware.SelectMany(EnumerableSensors).Where(x => x.Hardware.HardwareType == hardwareType && x.SensorType == sensorType);
+        computer.Hardware
+            .SelectMany(EnumerableSensors)
+            .Where(x => (x.Hardware.HardwareType == hardwareType) &&
+                        (x.SensorType == sensorType));
+
+    private IEnumerable<ISensor> EnumerableGpuSensors(SensorType sensorType) =>
+        computer.Hardware
+            .SelectMany(EnumerableSensors)
+            .Where(x => ((x.Hardware.HardwareType == HardwareType.GpuNvidia) ||
+                         (x.Hardware.HardwareType == HardwareType.GpuAmd) ||
+                         (x.Hardware.HardwareType == HardwareType.GpuIntel)) &&
+                        (x.SensorType == sensorType));
 
     private static IEnumerable<ISensor> EnumerableSensors(IHardware hardware)
     {
@@ -277,6 +288,120 @@ internal sealed class HardwareMonitorMetrics : IDisposable
                 "hardware.cpu.power",
                 () => MeasureSensor(powerSensors),
                 description: "CPU power.");
+        }
+    }
+
+    //--------------------------------------------------------------------------------
+    // GPU
+    //--------------------------------------------------------------------------------
+
+    private void SetupGpuMeasurement()
+    {
+        var loadSensors = EnumerableGpuSensors(SensorType.Load)
+            .Where(static x => x.Name.StartsWith("GPU", StringComparison.Ordinal))
+            .ToArray();
+        var clockSensors = EnumerableGpuSensors(SensorType.Clock).ToArray();
+        var fanSensors = EnumerableGpuSensors(SensorType.Fan).ToArray();
+        var temperatureSensors = EnumerableGpuSensors(SensorType.Temperature).ToArray();
+        var powerSensors = EnumerableGpuSensors(SensorType.Power).ToArray();
+        var memorySensors = EnumerableGpuSensors(SensorType.SmallData)
+            .Where(static x => x.Name.StartsWith("GPU Memory", StringComparison.Ordinal))
+            .ToArray();
+        var throughputSensors = EnumerableGpuSensors(SensorType.Throughput)
+            .Where(static x => x.Name.StartsWith("GPU PCIe", StringComparison.Ordinal))
+            .ToArray();
+
+        // GPU load
+        if (loadSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.gpu.load",
+                () => MeasureSensor(loadSensors),
+                description: "GPU load.");
+        }
+
+        // GPU clock
+        if (clockSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.gpu.clock",
+                () => MeasureSensor(clockSensors),
+                description: "GPU clock.");
+        }
+
+        // GPU fan
+        if (fanSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.gpu.fan",
+                () => MeasureSensor(fanSensors),
+                description: "GPU fan.");
+        }
+
+        // GPU temperature
+        if (temperatureSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.gpu.temperature",
+                () => MeasureSensor(temperatureSensors),
+                description: "GPU temperature.");
+        }
+
+        // GPU power
+        if (powerSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.gpu.power",
+                () => MeasureSensor(powerSensors),
+                description: "GPU power.");
+        }
+
+        // GPU memory
+        if (memorySensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.gpu.memory",
+                () => MeasureGpu(
+                    memorySensors.First(static x => x.Name == "GPU Memory Free"),
+                    memorySensors.First(static x => x.Name == "GPU Memory Used"),
+                    memorySensors.First(static x => x.Name == "GPU Memory Total")),
+                description: "GPU memory.");
+        }
+
+        // GPU throughput
+        if (throughputSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.gpu.throughput",
+                () => MeasureGpu(
+                    throughputSensors.First(static x => x.Name == "GPU PCIe Rx"),
+                    throughputSensors.First(static x => x.Name == "GPU PCIe Tx")),
+                description: "GPU throughput.");
+        }
+    }
+
+    private Measurement<double>[] MeasureGpu(ISensor freeMemory, ISensor usedMemory, ISensor totalMemory)
+    {
+        lock (computer)
+        {
+            return
+            [
+                new Measurement<double>(ToValue(freeMemory), new KeyValuePair<string, object?>[] { new("type", "free") }),
+                new Measurement<double>(ToValue(usedMemory), new KeyValuePair<string, object?>[] { new("type", "used") }),
+                new Measurement<double>(ToValue(totalMemory), new KeyValuePair<string, object?>[] { new("type", "total") })
+            ];
+        }
+    }
+
+    private Measurement<double>[] MeasureGpu(ISensor rxThroughput, ISensor txThroughput)
+    {
+        lock (computer)
+        {
+            return
+            [
+                new Measurement<double>(ToValue(rxThroughput), new KeyValuePair<string, object?>[] { new("type", "rx") }),
+                new Measurement<double>(ToValue(txThroughput), new KeyValuePair<string, object?>[] { new("type", "tx") })
+            ];
         }
     }
 
