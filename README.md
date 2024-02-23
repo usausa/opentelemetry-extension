@@ -37,5 +37,5 @@ for [2JCIE-BU](https://www.fa.omron.co.jp/products/family/3724/lineup.html)
 - [X] Storage (limited)
 - [X] Battery
 - [X] I/O
-- [ ] Cpu
-- [ ] Gpu
+- [X] Cpu
+- [X] Gpu
