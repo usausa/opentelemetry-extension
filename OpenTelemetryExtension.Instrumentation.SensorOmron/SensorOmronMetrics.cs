@@ -21,6 +21,7 @@ internal sealed class SensorOmronMetrics : IDisposable
 
         MeterInstance.CreateObservableUpDownCounter("sensor.temperature", () => ToMeasurement(sensor.Temperature));
         MeterInstance.CreateObservableUpDownCounter("sensor.humidity", () => ToMeasurement(sensor.Humidity));
+        MeterInstance.CreateObservableUpDownCounter("sensor.light", () => ToMeasurement(sensor.Light));
         MeterInstance.CreateObservableUpDownCounter("sensor.pressure", () => ToMeasurement(sensor.Pressure));
         MeterInstance.CreateObservableUpDownCounter("sensor.noise", () => ToMeasurement(sensor.Noise));
         MeterInstance.CreateObservableUpDownCounter("sensor.discomfort", () => ToMeasurement(sensor.Discomfort));
