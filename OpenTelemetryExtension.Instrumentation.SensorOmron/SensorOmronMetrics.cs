@@ -34,7 +34,7 @@ internal sealed class SensorOmronMetrics : IDisposable
     }
 
     private static Measurement<double>[] ToMeasurement(double? value) =>
-        value.HasValue ? [new Measurement<double>(value.Value)] : [];
+        value.HasValue ? [new Measurement<double>(value.Value, new KeyValuePair<string, object?>("type", "omron"))] : [];
 
     public void Dispose()
     {
