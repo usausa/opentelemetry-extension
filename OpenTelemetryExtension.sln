@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetryExtension.Inst
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetryExporterService", "OpenTelemetryExporterService\OpenTelemetryExporterService.csproj", "{D0C18CE7-0717-4902-8DC6-63657DA0DC7F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTelemetryExtension.Instrumentation.WFWattch2", "OpenTelemetryExtension.Instrumentation.WFWattch2\OpenTelemetryExtension.Instrumentation.WFWattch2.csproj", "{EC50FBFB-55E5-4292-9CAD-440F16A24803}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{D0C18CE7-0717-4902-8DC6-63657DA0DC7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0C18CE7-0717-4902-8DC6-63657DA0DC7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0C18CE7-0717-4902-8DC6-63657DA0DC7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC50FBFB-55E5-4292-9CAD-440F16A24803}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC50FBFB-55E5-4292-9CAD-440F16A24803}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC50FBFB-55E5-4292-9CAD-440F16A24803}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC50FBFB-55E5-4292-9CAD-440F16A24803}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
