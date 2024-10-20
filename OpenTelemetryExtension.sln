@@ -24,6 +24,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetryExporterServic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTelemetryExtension.Instrumentation.WFWattch2", "OpenTelemetryExtension.Instrumentation.WFWattch2\OpenTelemetryExtension.Instrumentation.WFWattch2.csproj", "{EC50FBFB-55E5-4292-9CAD-440F16A24803}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{98CAF4E3-BB6C-49BE-A2CD-BBAEAD7FAA26}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Service", "Service", "{2306C8A9-F50F-4A1B-8B33-8FC542E5A453}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +53,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6B7F136A-1241-4F5B-BDE0-C59E1C38B866} = {98CAF4E3-BB6C-49BE-A2CD-BBAEAD7FAA26}
+		{7002CF95-8503-43EA-86C0-1EF5B02DABFB} = {98CAF4E3-BB6C-49BE-A2CD-BBAEAD7FAA26}
+		{D0C18CE7-0717-4902-8DC6-63657DA0DC7F} = {2306C8A9-F50F-4A1B-8B33-8FC542E5A453}
+		{EC50FBFB-55E5-4292-9CAD-440F16A24803} = {98CAF4E3-BB6C-49BE-A2CD-BBAEAD7FAA26}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BEE7B975-6C11-464B-A25C-976957DF0307}
