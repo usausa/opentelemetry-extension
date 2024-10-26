@@ -24,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelemetryService", "Telemet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelemetryService.AppHost", "TelemetryService.AppHost\TelemetryService.AppHost.csproj", "{9F77E764-1F50-4DA9-85E5-AEE5A6101D8E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetryExtension.Instrumentation.SwitchBot", "OpenTelemetryExtension.Instrumentation.SwitchBot\OpenTelemetryExtension.Instrumentation.SwitchBot.csproj", "{E057F790-D978-43E1-8FCC-A74E73FB48F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetryExtension.Instrumentation.SwitchBot.Windows", "OpenTelemetryExtension.Instrumentation.SwitchBot.Windows\OpenTelemetryExtension.Instrumentation.SwitchBot.Windows.csproj", "{E057F790-D978-43E1-8FCC-A74E73FB48F0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetryExtension.Instrumentation.WFWattch2", "OpenTelemetryExtension.Instrumentation.WFWattch2\OpenTelemetryExtension.Instrumentation.WFWattch2.csproj", "{764E1A02-4DB3-40EB-9699-EEA269A1FA49}"
 EndProject

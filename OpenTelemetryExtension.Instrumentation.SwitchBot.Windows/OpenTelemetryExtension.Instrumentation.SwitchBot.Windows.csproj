@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>OpenTelemetryExtension.Instrumentation.SwitchBot</PackageId>
-    <Title>OpenTelemetryExtension.Instrumentation.SwitchBot</Title>
+    <PackageId>OpenTelemetryExtension.Instrumentation.SwitchBot.Windows</PackageId>
+    <Title>OpenTelemetryExtension.Instrumentation.SwitchBot.Windows</Title>
     <Description>OpenTelemetry extension.</Description>
     <PackageTags>opentelemetry metrics monitoring telemetry</PackageTags>
   </PropertyGroup>
