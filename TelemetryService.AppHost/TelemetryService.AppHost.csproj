@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net8.0;net8.0-windows10.0.22000.0</TargetFrameworks>
     <CodeAnalysisRuleSet>..\Analyzers.ruleset</CodeAnalysisRuleSet>
     <IsAspireHost>true</IsAspireHost>
     <UserSecretsId>bba23599-a53d-4128-9da7-3cc03b94dd54</UserSecretsId>
@@ -10,6 +10,10 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="8.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TelemetryService\TelemetryService.csproj" />
   </ItemGroup>
 
 </Project>

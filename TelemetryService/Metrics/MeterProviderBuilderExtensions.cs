@@ -1,4 +1,4 @@
-namespace OpenTelemetryExporterService.Metrics;
+namespace TelemetryService.Metrics;
 
 using OpenTelemetry.Metrics;
 

@@ -1,4 +1,4 @@
-namespace SwitchBotTelemetryService.Instrumentation;
+namespace OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
 
 public sealed class SwitchBotInstrumentationOptions
 {

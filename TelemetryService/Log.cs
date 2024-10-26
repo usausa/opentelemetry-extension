@@ -1,4 +1,4 @@
-namespace SensorTelemetryService;
+namespace TelemetryService;
 
 internal static partial class Log
 {

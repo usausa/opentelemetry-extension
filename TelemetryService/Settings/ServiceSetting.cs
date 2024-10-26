@@ -1,4 +1,4 @@
-namespace SwitchBotTelemetryService;
+namespace TelemetryService.Settings;
 
 #pragma warning disable CA1819
 public sealed class ServiceSetting
