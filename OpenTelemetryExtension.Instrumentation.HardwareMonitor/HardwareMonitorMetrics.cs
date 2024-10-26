@@ -19,7 +19,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private readonly Timer timer;
 
-    public HardwareMonitorMetrics(HardwareMonitorInstrumentationOptions options)
+    public HardwareMonitorMetrics(HardwareMonitorOptions options)
     {
         computer = new Computer
         {

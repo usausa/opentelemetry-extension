@@ -14,13 +14,13 @@ internal sealed class SwitchBotMetrics : IDisposable
 
     private static readonly Meter MeterInstance = new(MeterName, AssemblyName.Version!.ToString());
 
-    private readonly SwitchBotInstrumentationOptions options;
+    private readonly SwitchBotOptions options;
 
     private readonly BluetoothLEAdvertisementWatcher watcher;
 
     private readonly SortedDictionary<ulong, Data> sensorData = [];
 
-    public SwitchBotMetrics(SwitchBotInstrumentationOptions options)
+    public SwitchBotMetrics(SwitchBotOptions options)
     {
         this.options = options;
 

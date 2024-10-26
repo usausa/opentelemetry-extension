@@ -33,7 +33,7 @@ internal sealed class SensorOmronMetrics : IDisposable
     private float? eco2;
     private float? seismic;
 
-    public SensorOmronMetrics(SensorOmronInstrumentationOptions options)
+    public SensorOmronMetrics(SensorOmronOptions options)
     {
         name = options.Port;
         sensor = new RbtSensorSerial(options.Port);

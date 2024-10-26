@@ -3,6 +3,14 @@ using System.Runtime.InteropServices;
 using OpenTelemetry.Metrics;
 using OpenTelemetry;
 
+#if WINDOWS_TELEMETRY
+using OpenTelemetryExtension.Instrumentation.HardwareMonitor;
+#endif
+using OpenTelemetryExtension.Instrumentation.SensorOmron;
+#if WINDOWS_TELEMETRY
+using OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
+#endif
+
 using Serilog;
 
 using TelemetryService;
@@ -15,7 +23,7 @@ var builder = Host.CreateApplicationBuilder(args);
 var useOtlpExporter = !String.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
 
 // Setting
-var setting = builder.Configuration.GetSection("Service").Get<ServiceSetting>()!;
+var setting = builder.Configuration.GetSection("Telemetry").Get<TelemetrySetting>()!;
 
 // Service
 builder.Services
@@ -34,10 +42,26 @@ builder.Services
     .AddOpenTelemetry()
     .WithMetrics(metrics =>
     {
-        // TODO
-        metrics.AddApplicationInstrumentation();
-        //metrics.AddSensorOmronInstrumentation(setting.Port);
-        //metrics.AddSwitchBotInstrumentation();
+        if (setting.EnableApplicationMetrics)
+        {
+            metrics.AddApplicationInstrumentation();
+        }
+#if WINDOWS_TELEMETRY
+        if (setting.EnableHardwareMetrics)
+        {
+            metrics.AddHardwareMonitorInstrumentation(setting.Hardware);
+        }
+#endif
+        if (setting.EnableSensorOmronMetrics)
+        {
+            metrics.AddSensorOmronInstrumentation(setting.SensorOmron);
+        }
+#if WINDOWS_TELEMETRY
+        if (setting.EnableSwitchBotMetrics)
+        {
+            metrics.AddSwitchBotInstrumentation(setting.SwitchBot);
+        }
+#endif
 
         metrics.AddPrometheusHttpListener(options =>
         {

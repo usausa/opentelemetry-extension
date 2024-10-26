@@ -7,16 +7,16 @@ public static class MeterProviderBuilderExtensions
     public static MeterProviderBuilder AddSensorOmronInstrumentation(this MeterProviderBuilder builder, string port) =>
         AddSensorOmronInstrumentation(builder, options => { options.Port = port; });
 
-    public static MeterProviderBuilder AddSensorOmronInstrumentation(this MeterProviderBuilder builder, Action<SensorOmronInstrumentationOptions> configure)
+    public static MeterProviderBuilder AddSensorOmronInstrumentation(this MeterProviderBuilder builder, Action<SensorOmronOptions> configure)
     {
-        var options = new SensorOmronInstrumentationOptions();
+        var options = new SensorOmronOptions();
         configure(options);
 
         builder.AddMeter(SensorOmronMetrics.MeterName);
         return builder.AddInstrumentation(() => new SensorOmronMetrics(options));
     }
 
-    public static MeterProviderBuilder AddSensorOmronInstrumentation(this MeterProviderBuilder builder, SensorOmronInstrumentationOptions options)
+    public static MeterProviderBuilder AddSensorOmronInstrumentation(this MeterProviderBuilder builder, SensorOmronOptions options)
     {
         builder.AddMeter(SensorOmronMetrics.MeterName);
         return builder.AddInstrumentation(() => new SensorOmronMetrics(options));

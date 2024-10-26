@@ -7,6 +7,10 @@
     <UserSecretsId>f57949ea-2511-4851-8b81-5c2bc5ae8a75</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
+    <DefineConstants>$(DefineConstants);WINDOWS_TELEMETRY</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.1" />
@@ -21,7 +25,7 @@
     <PackageReference Include="Serilog.Sinks.SyslogMessages" Version="4.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
     <ProjectReference Include="..\OpenTelemetryExtension.Instrumentation.HardwareMonitor\OpenTelemetryExtension.Instrumentation.HardwareMonitor.csproj" />
   </ItemGroup>
   <ItemGroup>

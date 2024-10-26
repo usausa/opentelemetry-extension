@@ -1,6 +1,6 @@
 namespace OpenTelemetryExtension.Instrumentation.HardwareMonitor;
 
-public sealed class HardwareMonitorInstrumentationOptions
+public sealed class HardwareMonitorOptions
 {
     public int Interval { get; set; } = 5000;
 

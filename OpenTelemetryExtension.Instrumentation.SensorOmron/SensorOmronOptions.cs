@@ -1,6 +1,6 @@
 namespace OpenTelemetryExtension.Instrumentation.SensorOmron;
 
-public sealed class SensorOmronInstrumentationOptions
+public sealed class SensorOmronOptions
 {
     public string Port { get; set; } = default!;
 
