@@ -1,0 +1,131 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7C008EA7-BBCA-4BE0-B653-1B37E78AAD52}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		Analyzers.ruleset = Analyzers.ruleset
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		LICENSE = LICENSE
+		README.md = README.md
+		TelemetryService.sln.DotSettings = TelemetryService.sln.DotSettings
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Instrumentation", "Instrumentation", "{98CAF4E3-BB6C-49BE-A2CD-BBAEAD7FAA26}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Service", "Service", "{2306C8A9-F50F-4A1B-8B33-8FC542E5A453}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelemetryService", "TelemetryService\TelemetryService.csproj", "{3F167E6D-4AB3-4BEA-B40C-AADBAC487DFC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelemetryService.AppHost", "TelemetryService.AppHost\TelemetryService.AppHost.csproj", "{9F77E764-1F50-4DA9-85E5-AEE5A6101D8E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetryExtension.Instrumentation.SwitchBot", "OpenTelemetryExtension.Instrumentation.SwitchBot\OpenTelemetryExtension.Instrumentation.SwitchBot.csproj", "{E057F790-D978-43E1-8FCC-A74E73FB48F0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetryExtension.Instrumentation.WFWattch2", "OpenTelemetryExtension.Instrumentation.WFWattch2\OpenTelemetryExtension.Instrumentation.WFWattch2.csproj", "{764E1A02-4DB3-40EB-9699-EEA269A1FA49}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetryExtension.Instrumentation.HardwareMonitor", "OpenTelemetryExtension.Instrumentation.HardwareMonitor\OpenTelemetryExtension.Instrumentation.HardwareMonitor.csproj", "{8AE5C71B-D4A5-4BEE-A634-94518483487F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetryExtension.Instrumentation.SensorOmron", "OpenTelemetryExtension.Instrumentation.SensorOmron\OpenTelemetryExtension.Instrumentation.SensorOmron.csproj", "{FC606107-B758-41A6-A6F7-0573FEBB9EF8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Old", "_Old", "{626E8290-229F-49B9-89A5-2FFE318A17B0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetryExtension.Instrumentation.HardwareMonitor", "_OpenTelemetryExtension.Instrumentation.HardwareMonitor\OpenTelemetryExtension.Instrumentation.HardwareMonitor.csproj", "{8AA7110E-4E5C-40D2-B9B2-157B134135A0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetryExtension.Instrumentation.SensorOmron", "_OpenTelemetryExtension.Instrumentation.SensorOmron\OpenTelemetryExtension.Instrumentation.SensorOmron.csproj", "{2A2C78E7-2B06-4E95-A7C3-1D4E9D7E741C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenTelemetryExporterService", "_OpenTelemetryExporterService\OpenTelemetryExporterService.csproj", "{D700E1E6-9A39-4F83-89E6-E2FB560959C9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SensorTelemetryService", "_TelemetryService-SensorOmron\SensorTelemetryService\SensorTelemetryService.csproj", "{32728025-54A8-4B4C-B8C4-08E375B318A5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SensorTelemetryService.AppHost", "_TelemetryService-SensorOmron\SensorTelemetryService.AppHost\SensorTelemetryService.AppHost.csproj", "{8BBF45FB-39A4-42CA-8E16-28A3AFB1E45C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwitchBotTelemetryService", "_TelemetryService-SwitchBot\SwitchBotTelemetryService\SwitchBotTelemetryService.csproj", "{3BC11433-2DA2-47DF-9BFF-5544C42E6013}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwitchBotTelemetryService.AppHost", "_TelemetryService-SwitchBot\SwitchBotTelemetryService.AppHost\SwitchBotTelemetryService.AppHost.csproj", "{17079AB3-82D6-4827-A094-E900AA4D2C24}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3F167E6D-4AB3-4BEA-B40C-AADBAC487DFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F167E6D-4AB3-4BEA-B40C-AADBAC487DFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F167E6D-4AB3-4BEA-B40C-AADBAC487DFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F167E6D-4AB3-4BEA-B40C-AADBAC487DFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F77E764-1F50-4DA9-85E5-AEE5A6101D8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F77E764-1F50-4DA9-85E5-AEE5A6101D8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F77E764-1F50-4DA9-85E5-AEE5A6101D8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F77E764-1F50-4DA9-85E5-AEE5A6101D8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E057F790-D978-43E1-8FCC-A74E73FB48F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E057F790-D978-43E1-8FCC-A74E73FB48F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E057F790-D978-43E1-8FCC-A74E73FB48F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E057F790-D978-43E1-8FCC-A74E73FB48F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{764E1A02-4DB3-40EB-9699-EEA269A1FA49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{764E1A02-4DB3-40EB-9699-EEA269A1FA49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{764E1A02-4DB3-40EB-9699-EEA269A1FA49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{764E1A02-4DB3-40EB-9699-EEA269A1FA49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AE5C71B-D4A5-4BEE-A634-94518483487F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AE5C71B-D4A5-4BEE-A634-94518483487F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AE5C71B-D4A5-4BEE-A634-94518483487F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AE5C71B-D4A5-4BEE-A634-94518483487F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC606107-B758-41A6-A6F7-0573FEBB9EF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC606107-B758-41A6-A6F7-0573FEBB9EF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC606107-B758-41A6-A6F7-0573FEBB9EF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC606107-B758-41A6-A6F7-0573FEBB9EF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AA7110E-4E5C-40D2-B9B2-157B134135A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AA7110E-4E5C-40D2-B9B2-157B134135A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AA7110E-4E5C-40D2-B9B2-157B134135A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AA7110E-4E5C-40D2-B9B2-157B134135A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A2C78E7-2B06-4E95-A7C3-1D4E9D7E741C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A2C78E7-2B06-4E95-A7C3-1D4E9D7E741C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A2C78E7-2B06-4E95-A7C3-1D4E9D7E741C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A2C78E7-2B06-4E95-A7C3-1D4E9D7E741C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D700E1E6-9A39-4F83-89E6-E2FB560959C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D700E1E6-9A39-4F83-89E6-E2FB560959C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D700E1E6-9A39-4F83-89E6-E2FB560959C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D700E1E6-9A39-4F83-89E6-E2FB560959C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32728025-54A8-4B4C-B8C4-08E375B318A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32728025-54A8-4B4C-B8C4-08E375B318A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32728025-54A8-4B4C-B8C4-08E375B318A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32728025-54A8-4B4C-B8C4-08E375B318A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BBF45FB-39A4-42CA-8E16-28A3AFB1E45C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BBF45FB-39A4-42CA-8E16-28A3AFB1E45C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BBF45FB-39A4-42CA-8E16-28A3AFB1E45C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BBF45FB-39A4-42CA-8E16-28A3AFB1E45C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BC11433-2DA2-47DF-9BFF-5544C42E6013}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BC11433-2DA2-47DF-9BFF-5544C42E6013}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BC11433-2DA2-47DF-9BFF-5544C42E6013}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BC11433-2DA2-47DF-9BFF-5544C42E6013}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17079AB3-82D6-4827-A094-E900AA4D2C24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17079AB3-82D6-4827-A094-E900AA4D2C24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17079AB3-82D6-4827-A094-E900AA4D2C24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17079AB3-82D6-4827-A094-E900AA4D2C24}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3F167E6D-4AB3-4BEA-B40C-AADBAC487DFC} = {2306C8A9-F50F-4A1B-8B33-8FC542E5A453}
+		{9F77E764-1F50-4DA9-85E5-AEE5A6101D8E} = {2306C8A9-F50F-4A1B-8B33-8FC542E5A453}
+		{E057F790-D978-43E1-8FCC-A74E73FB48F0} = {98CAF4E3-BB6C-49BE-A2CD-BBAEAD7FAA26}
+		{764E1A02-4DB3-40EB-9699-EEA269A1FA49} = {98CAF4E3-BB6C-49BE-A2CD-BBAEAD7FAA26}
+		{8AE5C71B-D4A5-4BEE-A634-94518483487F} = {98CAF4E3-BB6C-49BE-A2CD-BBAEAD7FAA26}
+		{FC606107-B758-41A6-A6F7-0573FEBB9EF8} = {98CAF4E3-BB6C-49BE-A2CD-BBAEAD7FAA26}
+		{8AA7110E-4E5C-40D2-B9B2-157B134135A0} = {626E8290-229F-49B9-89A5-2FFE318A17B0}
+		{2A2C78E7-2B06-4E95-A7C3-1D4E9D7E741C} = {626E8290-229F-49B9-89A5-2FFE318A17B0}
+		{D700E1E6-9A39-4F83-89E6-E2FB560959C9} = {626E8290-229F-49B9-89A5-2FFE318A17B0}
+		{32728025-54A8-4B4C-B8C4-08E375B318A5} = {626E8290-229F-49B9-89A5-2FFE318A17B0}
+		{8BBF45FB-39A4-42CA-8E16-28A3AFB1E45C} = {626E8290-229F-49B9-89A5-2FFE318A17B0}
+		{3BC11433-2DA2-47DF-9BFF-5544C42E6013} = {626E8290-229F-49B9-89A5-2FFE318A17B0}
+		{17079AB3-82D6-4827-A094-E900AA4D2C24} = {626E8290-229F-49B9-89A5-2FFE318A17B0}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BEE7B975-6C11-464B-A25C-976957DF0307}
+	EndGlobalSection
+EndGlobal

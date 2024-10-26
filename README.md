@@ -1,3 +1,7 @@
+# Telemetry Service
+
+(TNG)
+
 # OpenTelemetryExtension
 
 ```csharp
@@ -18,7 +22,6 @@ builder.Services
 
 builder.Build().Run();
 ```
-
 
 ## OpenTelemetryExtension.Instrumentation.SensorOmron
 

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net8.0;net8.0-windows10.0.22000.0</TargetFrameworks>
+    <IsAspireHost>true</IsAspireHost>
+    <UserSecretsId>76f8619d-5b41-4f2c-94dd-6173cb82c819</UserSecretsId>
+    <CodeAnalysisRuleSet>..\Analyzers.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="8.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SwitchBotTelemetryService\SwitchBotTelemetryService.csproj" />
+  </ItemGroup>
+
+</Project>

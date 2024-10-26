@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>OpenTelemetryExtension.Instrumentation.SensorOmron</PackageId>
-    <Title>OpenTelemetryExtension.Instrumentation.SensorOmron</Title>
+    <PackageId>OpenTelemetryExtension.Instrumentation.SwitchBot</PackageId>
+    <Title>OpenTelemetryExtension.Instrumentation.SwitchBot</Title>
     <Description>OpenTelemetry extension.</Description>
     <PackageTags>opentelemetry metrics monitoring telemetry</PackageTags>
   </PropertyGroup>

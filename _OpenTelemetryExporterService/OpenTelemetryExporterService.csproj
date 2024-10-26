@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OpenTelemetryExtension.Instrumentation.HardwareMonitor\OpenTelemetryExtension.Instrumentation.HardwareMonitor.csproj" />
-    <ProjectReference Include="..\OpenTelemetryExtension.Instrumentation.SensorOmron\OpenTelemetryExtension.Instrumentation.SensorOmron.csproj" />
+    <ProjectReference Include="..\_OpenTelemetryExtension.Instrumentation.HardwareMonitor\OpenTelemetryExtension.Instrumentation.HardwareMonitor.csproj" />
+    <ProjectReference Include="..\_OpenTelemetryExtension.Instrumentation.SensorOmron\OpenTelemetryExtension.Instrumentation.SensorOmron.csproj" />
   </ItemGroup>
 
 </Project>
