@@ -13,8 +13,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DeviceLib.SensorOmron" Version="1.0.0" />
     <PackageReference Include="OpenTelemetry" Version="1.9.0" />
-    <PackageReference Include="System.IO.Ports" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

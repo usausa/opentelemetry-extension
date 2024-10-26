@@ -4,5 +4,5 @@ public sealed class SensorOmronInstrumentationOptions
 {
     public string Port { get; set; } = default!;
 
-    public int Interval { get; set; } = 10000;
+    public int Interval { get; set; } = 5000;
 }

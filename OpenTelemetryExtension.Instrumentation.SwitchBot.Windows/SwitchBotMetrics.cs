@@ -1,11 +1,13 @@
 namespace OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
 
+using System;
 using System.Diagnostics.Metrics;
 using System.Reflection;
+using System.Runtime.InteropServices.WindowsRuntime;
 
-using InTheHand.Bluetooth;
+using global::Windows.Devices.Bluetooth.Advertisement;
 
-internal sealed class SwitchBotMetrics
+internal sealed class SwitchBotMetrics : IDisposable
 {
     internal static readonly AssemblyName AssemblyName = typeof(SwitchBotMetrics).Assembly.GetName();
     internal static readonly string MeterName = AssemblyName.Name!;
@@ -14,54 +16,55 @@ internal sealed class SwitchBotMetrics
 
     private readonly SwitchBotInstrumentationOptions options;
 
-    private readonly SortedDictionary<string, Data> sensorData = [];
+    private readonly BluetoothLEAdvertisementWatcher watcher;
+
+    private readonly SortedDictionary<ulong, Data> sensorData = [];
 
     public SwitchBotMetrics(SwitchBotInstrumentationOptions options)
     {
         this.options = options;
 
-        MeterInstance.CreateObservableUpDownCounter(
-            "sensor.rssi",
-            () => GatherValues(static _ => true, ToRssi));
-        MeterInstance.CreateObservableUpDownCounter(
-            "sensor.temperature",
-            () => GatherValues(static _ => true, ToTemperature));
-        MeterInstance.CreateObservableUpDownCounter(
-            "sensor.humidity",
-            () => GatherValues(static _ => true, ToHumidity));
-        MeterInstance.CreateObservableUpDownCounter(
-            "sensor.co2",
-            () => GatherValues(static x => x.Co2.HasValue, ToCo2));
+        MeterInstance.CreateObservableUpDownCounter("sensor.rssi", () => ToMeasurement(static x => x.Rssi));
+        MeterInstance.CreateObservableUpDownCounter("sensor.temperature", () => ToMeasurement(static x => x.Temperature));
+        MeterInstance.CreateObservableUpDownCounter("sensor.humidity", () => ToMeasurement(static x => x.Humidity));
+        MeterInstance.CreateObservableUpDownCounter("sensor.co2", () => ToMeasurement(static x => x.Co2));
 
-        Bluetooth.AdvertisementReceived += BluetoothOnAdvertisementReceived;
-        _ = Bluetooth.RequestLEScanAsync();
+        watcher = new BluetoothLEAdvertisementWatcher();
+        watcher.Received += OnWatcherReceived;
+        watcher.Start();
+    }
+
+    public void Dispose()
+    {
+        watcher.Stop();
+        watcher.Received -= OnWatcherReceived;
     }
 
     //--------------------------------------------------------------------------------
     // Event
     //--------------------------------------------------------------------------------
 
-    private void BluetoothOnAdvertisementReceived(object? sender, BluetoothAdvertisingEvent e)
+    private void OnWatcherReceived(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs args)
     {
-        if (e.ManufacturerData.TryGetValue(0x0969, out var buffer) && buffer.Length >= 11)
+        foreach (var md in args.Advertisement.ManufacturerData.Where(static x => x.CompanyId == 0x0969))
         {
-            var temperature = (((double)(buffer[8] & 0x0f) / 10) + (buffer[9] & 0x7f)) * ((buffer[9] & 0x80) > 0 ? 1 : -1);
-            var humidity = buffer[10] & 0x7f;
-
-            lock (sensorData)
+            var buffer = md.Data.ToArray();
+            if (buffer.Length >= 11)
             {
-                if (!sensorData.TryGetValue(e.Device.Id, out var data))
+                lock (sensorData)
                 {
-                    data = new Data { Id = e.Device.Id };
-                    sensorData[e.Device.Id] = data;
-                }
+                    if (!sensorData.TryGetValue(args.BluetoothAddress, out var data))
+                    {
+                        data = new Data { Address = args.BluetoothAddress };
+                        sensorData[args.BluetoothAddress] = data;
+                    }
 
-                data.LastUpdate = DateTime.Now;
-                data.Rssi = e.Rssi;
-                data.Temperature = temperature;
-                data.Humidity = humidity;
-                // TODO
-                data.Co2 = null;
+                    data.LastUpdate = DateTime.Now;
+                    data.Rssi = args.RawSignalStrengthInDBm;
+                    data.Temperature = (((double)(buffer[8] & 0x0f) / 10) + (buffer[9] & 0x7f)) * ((buffer[9] & 0x80) > 0 ? 1 : -1);
+                    data.Humidity = buffer[10] & 0x7f;
+                    data.Co2 = buffer.Length >= 16 ? (buffer[13] << 8) + buffer[14] : null;
+                }
             }
         }
     }
@@ -70,13 +73,13 @@ internal sealed class SwitchBotMetrics
     // Measure
     //--------------------------------------------------------------------------------
 
-    private Measurement<double>[] GatherValues(Func<Data, bool> selector, Func<Data, Measurement<double>> converter)
+    private List<Measurement<double>> ToMeasurement(Func<Data, double?> converter)
     {
-        var list = new List<Data>();
+        var values = new List<Measurement<double>>();
 
         lock (sensorData)
         {
-            var removes = default(List<string>?);
+            var removes = default(List<ulong>?);
 
             var now = DateTime.Now;
             foreach (var (key, data) in sensorData)
@@ -86,9 +89,13 @@ internal sealed class SwitchBotMetrics
                     removes ??= [];
                     removes.Add(key);
                 }
-                else if (selector(data))
+                else
                 {
-                    list.Add(data);
+                    var value = converter(data);
+                    if (value.HasValue)
+                    {
+                        values.Add(new Measurement<double>(value.Value, new("model", "switchbot"), new("id", data.Address)));
+                    }
                 }
             }
 
@@ -101,25 +108,8 @@ internal sealed class SwitchBotMetrics
             }
         }
 
-        var values = new Measurement<double>[list.Count];
-        for (var i = 0; i < list.Count; i++)
-        {
-            values[i] = converter(list[i]);
-        }
         return values;
     }
-
-    private static Measurement<double> ToRssi(Data data) =>
-        new(data.Rssi, new("type", "switchbot"), new("device", data.Id));
-
-    private static Measurement<double> ToTemperature(Data data) =>
-        new(data.Temperature, new("type", "switchbot"), new("device", data.Id));
-
-    private static Measurement<double> ToHumidity(Data data) =>
-        new(data.Humidity, new("type", "switchbot"), new("device", data.Id));
-
-    private static Measurement<double> ToCo2(Data data) =>
-        new(data.Co2!.Value, new("type", "switchbot"), new("device", data.Id));
 
     //--------------------------------------------------------------------------------
     // Data
@@ -127,7 +117,7 @@ internal sealed class SwitchBotMetrics
 
     private sealed class Data
     {
-        public required string Id { get; init; }
+        public required ulong Address { get; init; }
 
         public DateTime LastUpdate { get; set; }
 

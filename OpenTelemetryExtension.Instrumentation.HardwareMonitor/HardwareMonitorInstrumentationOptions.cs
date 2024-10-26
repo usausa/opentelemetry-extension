@@ -2,7 +2,7 @@ namespace OpenTelemetryExtension.Instrumentation.HardwareMonitor;
 
 public sealed class HardwareMonitorInstrumentationOptions
 {
-    public int Interval { get; set; } = 10000;
+    public int Interval { get; set; } = 5000;
 
     public bool IsBatteryEnabled { get; set; } = true;
 
