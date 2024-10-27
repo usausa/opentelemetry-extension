@@ -16,14 +16,14 @@ internal sealed class SwitchBotMetrics : IDisposable
 
     private readonly SwitchBotOptions options;
 
-    private readonly BluetoothLEAdvertisementWatcher watcher;
+    private readonly Device[] devices;
 
-    private readonly SortedDictionary<ulong, Device> sensorData = [];
+    private readonly BluetoothLEAdvertisementWatcher watcher;
 
     public SwitchBotMetrics(SwitchBotOptions options)
     {
         this.options = options;
-        // TODO Device
+        devices = options.Device.Select(static x => new Device(x)).ToArray();
 
         MeterInstance.CreateObservableUpDownCounter("sensor.rssi", () => ToMeasurement(static x => x.Rssi));
         MeterInstance.CreateObservableUpDownCounter("sensor.temperature", () => ToMeasurement(static x => x.Temperature));
@@ -42,6 +42,40 @@ internal sealed class SwitchBotMetrics : IDisposable
     }
 
     //--------------------------------------------------------------------------------
+    // Measure
+    //--------------------------------------------------------------------------------
+
+    private List<Measurement<double>> ToMeasurement(Func<Device, double?> selector)
+    {
+        lock (devices)
+        {
+            var values = new List<Measurement<double>>(devices.Length);
+
+            var now = DateTime.Now;
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var device in devices)
+            {
+                if ((now - device.LastUpdate).TotalSeconds > options.TimeThreshold)
+                {
+                    continue;
+                }
+
+                var value = selector(device);
+                if (value.HasValue)
+                {
+                    values.Add(new Measurement<double>(
+                        value.Value,
+                        new("model", "switchbot"),
+                        new("address", device.Setting.Address),
+                        new("name", device.Setting.Name)));
+                }
+            }
+
+            return values;
+        }
+    }
+
+    //--------------------------------------------------------------------------------
     // Event
     //--------------------------------------------------------------------------------
 
@@ -49,65 +83,24 @@ internal sealed class SwitchBotMetrics : IDisposable
     {
         foreach (var md in args.Advertisement.ManufacturerData.Where(static x => x.CompanyId == 0x0969))
         {
-            var buffer = md.Data.ToArray();
-            if (buffer.Length >= 11)
+            lock (devices)
             {
-                lock (sensorData)
+                var device = devices.FirstOrDefault(x => x.Address == args.BluetoothAddress);
+                if (device is null)
                 {
-                    if (!sensorData.TryGetValue(args.BluetoothAddress, out var data))
-                    {
-                        data = new Device { Address = args.BluetoothAddress };
-                        sensorData[args.BluetoothAddress] = data;
-                    }
+                    return;
+                }
 
-                    data.LastUpdate = DateTime.Now;
-                    data.Rssi = args.RawSignalStrengthInDBm;
-                    data.Temperature = (((double)(buffer[8] & 0x0f) / 10) + (buffer[9] & 0x7f)) * ((buffer[9] & 0x80) > 0 ? 1 : -1);
-                    data.Humidity = buffer[10] & 0x7f;
-                    data.Co2 = buffer.Length >= 16 ? (buffer[13] << 8) + buffer[14] : null;
+                var buffer = md.Data.ToArray();
+                if (buffer.Length >= 11)
+                {
+                    device.LastUpdate = DateTime.Now;
+                    device.Rssi = args.RawSignalStrengthInDBm;
+                    device.Temperature = (((double)(buffer[8] & 0x0f) / 10) + (buffer[9] & 0x7f)) * ((buffer[9] & 0x80) > 0 ? 1 : -1);
+                    device.Humidity = buffer[10] & 0x7f;
+                    device.Co2 = buffer.Length >= 16 ? (buffer[13] << 8) + buffer[14] : null;
                 }
             }
-        }
-    }
-
-    //--------------------------------------------------------------------------------
-    // Measure
-    //--------------------------------------------------------------------------------
-
-    private List<Measurement<double>> ToMeasurement(Func<Device, double?> converter)
-    {
-        lock (sensorData)
-        {
-            var values = new List<Measurement<double>>(sensorData.Count);
-
-            var removes = default(List<ulong>?);
-            var now = DateTime.Now;
-            foreach (var (key, data) in sensorData)
-            {
-                if ((now - data.LastUpdate).TotalSeconds > options.TimeThreshold)
-                {
-                    removes ??= [];
-                    removes.Add(key);
-                }
-                else
-                {
-                    var value = converter(data);
-                    if (value.HasValue)
-                    {
-                        values.Add(new Measurement<double>(value.Value, new("model", "switchbot"), new("id", data.Address)));
-                    }
-                }
-            }
-
-            if (removes is not null)
-            {
-                foreach (var key in removes)
-                {
-                    sensorData.Remove(key);
-                }
-            }
-
-            return values;
         }
     }
 
@@ -117,7 +110,9 @@ internal sealed class SwitchBotMetrics : IDisposable
 
     private sealed class Device
     {
-        public required ulong Address { get; init; }
+        public ulong Address { get; }
+
+        public DeviceEntry Setting { get; }
 
         public DateTime LastUpdate { get; set; }
 
@@ -128,5 +123,13 @@ internal sealed class SwitchBotMetrics : IDisposable
         public double Humidity { get; set; }
 
         public double? Co2 { get; set; }
+
+        public Device(DeviceEntry setting)
+        {
+            Setting = setting;
+            Address = Convert.ToUInt64(
+                setting.Address.Replace(":", string.Empty, StringComparison.Ordinal).Replace("-", string.Empty, StringComparison.Ordinal),
+                16);
+        }
     }
 }

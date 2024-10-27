@@ -33,7 +33,7 @@ public sealed class TelemetrySetting
     // Option
 
 #if WINDOWS_TELEMETRY
-    public HardwareMonitorOptions Hardware { get; set; } = default!;
+    public HardwareMonitorOptions HardwareMonitor { get; set; } = default!;
 #endif
 
     public SensorOmronOptions SensorOmron { get; set; } = default!;

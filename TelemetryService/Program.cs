@@ -50,7 +50,7 @@ builder.Services
 #if WINDOWS_TELEMETRY
         if (setting.EnableHardwareMetrics)
         {
-            metrics.AddHardwareMonitorInstrumentation(setting.Hardware);
+            metrics.AddHardwareMonitorInstrumentation(setting.HardwareMonitor);
         }
 #endif
         if (setting.EnableSensorOmronMetrics)
