@@ -33,8 +33,8 @@ internal sealed class SensorOmronMetrics : IDisposable
         MeterInstance.CreateObservableUpDownCounter("sensor.noise", () => ToMeasurement(static x => x.Noise));
         MeterInstance.CreateObservableUpDownCounter("sensor.discomfort", () => ToMeasurement(static x => x.Discomfort));
         MeterInstance.CreateObservableUpDownCounter("sensor.heat", () => ToMeasurement(static x => x.Heat));
-        MeterInstance.CreateObservableUpDownCounter("sensor.etvoc", () => ToMeasurement(static x => x.Etvoc));
-        MeterInstance.CreateObservableUpDownCounter("sensor.eco2", () => ToMeasurement(static x => x.Eco2));
+        MeterInstance.CreateObservableUpDownCounter("sensor.tvoc", () => ToMeasurement(static x => x.Etvoc));
+        MeterInstance.CreateObservableUpDownCounter("sensor.co2", () => ToMeasurement(static x => x.Eco2));
         MeterInstance.CreateObservableUpDownCounter("sensor.seismic", () => ToMeasurement(static x => x.Seismic));
 
         timer = new Timer(_ => Update(), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(options.Interval));
