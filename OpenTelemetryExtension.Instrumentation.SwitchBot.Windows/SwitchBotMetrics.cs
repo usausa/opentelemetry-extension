@@ -1,6 +1,7 @@
 namespace OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
