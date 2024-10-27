@@ -6,6 +6,8 @@ using System.Runtime.CompilerServices;
 
 using LibreHardwareMonitor.Hardware;
 
+using Microsoft.Extensions.Logging;
+
 internal sealed class HardwareMonitorMetrics : IDisposable
 {
     internal static readonly AssemblyName AssemblyName = typeof(HardwareMonitorMetrics).Assembly.GetName();
@@ -19,8 +21,12 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private readonly Timer timer;
 
-    public HardwareMonitorMetrics(HardwareMonitorOptions options)
+    public HardwareMonitorMetrics(
+        ILogger<HardwareMonitorMetrics> log,
+        HardwareMonitorOptions options)
     {
+        log.InfoMetricsEnabled(nameof(HardwareMonitorMetrics));
+
         computer = new Computer
         {
             IsBatteryEnabled = options.IsBatteryEnabled,

@@ -1,10 +1,11 @@
 namespace OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
 
 using System;
-using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Reflection;
 using System.Runtime.InteropServices.WindowsRuntime;
+
+using Microsoft.Extensions.Logging;
 
 using global::Windows.Devices.Bluetooth.Advertisement;
 
@@ -21,8 +22,12 @@ internal sealed class SwitchBotMetrics : IDisposable
 
     private readonly BluetoothLEAdvertisementWatcher watcher;
 
-    public SwitchBotMetrics(SwitchBotOptions options)
+    public SwitchBotMetrics(
+        ILogger<SwitchBotMetrics> log,
+        SwitchBotOptions options)
     {
+        log.InfoMetricsEnabled(nameof(SwitchBotMetrics));
+
         this.options = options;
         devices = options.Device.Select(static x => new Device(x)).ToArray();
 
@@ -31,7 +36,10 @@ internal sealed class SwitchBotMetrics : IDisposable
         MeterInstance.CreateObservableUpDownCounter("sensor.humidity", () => ToMeasurement(static x => x.Humidity));
         MeterInstance.CreateObservableUpDownCounter("sensor.co2", () => ToMeasurement(static x => x.Co2));
 
-        watcher = new BluetoothLEAdvertisementWatcher();
+        watcher = new BluetoothLEAdvertisementWatcher
+        {
+            ScanningMode = BluetoothLEScanningMode.Active
+        };
         watcher.Received += OnWatcherReceived;
         watcher.Start();
     }

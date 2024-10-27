@@ -1,5 +1,8 @@
 namespace OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
 
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
 using OpenTelemetry.Metrics;
 
 public static class MeterProviderBuilderExtensions
@@ -10,12 +13,12 @@ public static class MeterProviderBuilderExtensions
         configure(options);
 
         builder.AddMeter(SwitchBotMetrics.MeterName);
-        return builder.AddInstrumentation(() => new SwitchBotMetrics(options));
+        return builder.AddInstrumentation(p => new SwitchBotMetrics(p.GetRequiredService<ILogger<SwitchBotMetrics>>(), options));
     }
 
     public static MeterProviderBuilder AddSwitchBotInstrumentation(this MeterProviderBuilder builder, SwitchBotOptions options)
     {
         builder.AddMeter(SwitchBotMetrics.MeterName);
-        return builder.AddInstrumentation(() => new SwitchBotMetrics(options));
+        return builder.AddInstrumentation(p => new SwitchBotMetrics(p.GetRequiredService<ILogger<SwitchBotMetrics>>(), options));
     }
 }

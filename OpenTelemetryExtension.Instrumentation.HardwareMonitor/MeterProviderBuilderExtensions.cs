@@ -1,5 +1,8 @@
 namespace OpenTelemetryExtension.Instrumentation.HardwareMonitor;
 
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
 using OpenTelemetry.Metrics;
 
 public static class MeterProviderBuilderExtensions
@@ -13,12 +16,12 @@ public static class MeterProviderBuilderExtensions
         configure(options);
 
         builder.AddMeter(HardwareMonitorMetrics.MeterName);
-        return builder.AddInstrumentation(() => new HardwareMonitorMetrics(options));
+        return builder.AddInstrumentation(p => new HardwareMonitorMetrics(p.GetRequiredService<ILogger<HardwareMonitorMetrics>>(), options));
     }
 
     public static MeterProviderBuilder AddHardwareMonitorInstrumentation(this MeterProviderBuilder builder, HardwareMonitorOptions options)
     {
         builder.AddMeter(HardwareMonitorMetrics.MeterName);
-        return builder.AddInstrumentation(() => new HardwareMonitorMetrics(options));
+        return builder.AddInstrumentation(p => new HardwareMonitorMetrics(p.GetRequiredService<ILogger<HardwareMonitorMetrics>>(), options));
     }
 }

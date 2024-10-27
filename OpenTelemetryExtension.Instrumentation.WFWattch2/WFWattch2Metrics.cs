@@ -7,6 +7,8 @@ using System.Reflection;
 
 using DeviceLib.WFWattch2;
 
+using Microsoft.Extensions.Logging;
+
 internal sealed class WFWattch2Metrics : IDisposable
 {
     internal static readonly AssemblyName AssemblyName = typeof(WFWattch2Metrics).Assembly.GetName();
@@ -18,8 +20,12 @@ internal sealed class WFWattch2Metrics : IDisposable
 
     private readonly Timer timer;
 
-    public WFWattch2Metrics(WFWattch2Options options)
+    public WFWattch2Metrics(
+        ILogger<WFWattch2Metrics> log,
+        WFWattch2Options options)
     {
+        log.InfoMetricsEnabled(nameof(WFWattch2Metrics));
+
         devices = options.Device.Select(static x => new Device(x)).ToArray();
 
         MeterInstance.CreateObservableUpDownCounter("sensor.power", () => ToMeasurement(static x => x.Power));

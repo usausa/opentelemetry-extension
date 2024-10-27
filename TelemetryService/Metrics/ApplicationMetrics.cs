@@ -14,8 +14,11 @@ internal sealed class ApplicationMetrics
 
     private static readonly Meter MeterInstance = new(MeterName, AssemblyName.Version!.ToString());
 
-    public ApplicationMetrics()
+    public ApplicationMetrics(
+        ILogger<ApplicationMetrics> log)
     {
+        log.InfoMetricsEnabled(nameof(ApplicationMetrics));
+
         MeterInstance.CreateObservableCounter("application.uptime", ObserveApplicationUptime);
     }
 

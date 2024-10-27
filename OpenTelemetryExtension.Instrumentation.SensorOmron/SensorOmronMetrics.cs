@@ -5,6 +5,8 @@ using System.Reflection;
 
 using DeviceLib.SensorOmron;
 
+using Microsoft.Extensions.Logging;
+
 internal sealed class SensorOmronMetrics : IDisposable
 {
     internal static readonly AssemblyName AssemblyName = typeof(SensorOmronMetrics).Assembly.GetName();
@@ -16,8 +18,12 @@ internal sealed class SensorOmronMetrics : IDisposable
 
     private readonly Timer timer;
 
-    public SensorOmronMetrics(SensorOmronOptions options)
+    public SensorOmronMetrics(
+        ILogger<SensorOmronMetrics> log,
+        SensorOmronOptions options)
     {
+        log.InfoMetricsEnabled(nameof(SensorOmronMetrics));
+
         devices = options.Device.Select(static x => new Device(x)).ToArray();
 
         MeterInstance.CreateObservableUpDownCounter("sensor.temperature", () => ToMeasurement(static x => x.Temperature));
