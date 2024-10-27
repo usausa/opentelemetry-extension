@@ -1,4 +1,4 @@
-namespace OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
+namespace OpenTelemetryExtension.Instrumentation.WFWattch2;
 
 public sealed class DeviceEntry
 {
@@ -8,9 +8,9 @@ public sealed class DeviceEntry
 }
 
 #pragma warning disable CA1819
-public sealed class SwitchBotOptions
+public sealed class WFWattch2Options
 {
-    public int TimeThreshold { get; set; } = 300_000;
+    public int Interval { get; set; } = 5000;
 
     public DeviceEntry[] Device { get; set; } = default!;
 }

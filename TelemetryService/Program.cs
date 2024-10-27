@@ -7,6 +7,7 @@ using OpenTelemetry;
 using OpenTelemetryExtension.Instrumentation.HardwareMonitor;
 #endif
 using OpenTelemetryExtension.Instrumentation.SensorOmron;
+using OpenTelemetryExtension.Instrumentation.WFWattch2;
 #if WINDOWS_TELEMETRY
 using OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
 #endif
@@ -55,6 +56,10 @@ builder.Services
         if (setting.EnableSensorOmronMetrics)
         {
             metrics.AddSensorOmronInstrumentation(setting.SensorOmron);
+        }
+        if (setting.EnableWFWattch2Metrics)
+        {
+            metrics.AddWFWattch2Instrumentation(setting.WFWattch2);
         }
 #if WINDOWS_TELEMETRY
         if (setting.EnableSwitchBotMetrics)

@@ -12,124 +12,279 @@ internal sealed class SensorOmronMetrics : IDisposable
 
     private static readonly Meter MeterInstance = new(MeterName, AssemblyName.Version!.ToString());
 
-    private readonly string name;
-
-    private readonly RbtSensorSerial sensor;
+    private readonly Device[] devices;
 
     private readonly Timer timer;
 
-    private readonly SemaphoreSlim semaphore = new(1, 1);
-
-    private readonly object sync = new();
-
-    private float? temperature;
-    private float? humidity;
-    private float? light;
-    private float? pressure;
-    private float? noise;
-    private float? discomfort;
-    private float? heat;
-    private float? etvoc;
-    private float? eco2;
-    private float? seismic;
-
     public SensorOmronMetrics(SensorOmronOptions options)
     {
-        name = options.Port;
-        sensor = new RbtSensorSerial(options.Port);
+        devices = options.Device.Select(static x => new Device(x)).ToArray();
 
-        MeterInstance.CreateObservableUpDownCounter("sensor.temperature", () => ToMeasurement(static x => x.temperature));
-        MeterInstance.CreateObservableUpDownCounter("sensor.humidity", () => ToMeasurement(static x => x.humidity));
-        MeterInstance.CreateObservableUpDownCounter("sensor.light", () => ToMeasurement(static x => x.light));
-        MeterInstance.CreateObservableUpDownCounter("sensor.pressure", () => ToMeasurement(static x => x.pressure));
-        MeterInstance.CreateObservableUpDownCounter("sensor.noise", () => ToMeasurement(static x => x.noise));
-        MeterInstance.CreateObservableUpDownCounter("sensor.discomfort", () => ToMeasurement(static x => x.discomfort));
-        MeterInstance.CreateObservableUpDownCounter("sensor.heat", () => ToMeasurement(static x => x.heat));
-        MeterInstance.CreateObservableUpDownCounter("sensor.etvoc", () => ToMeasurement(static x => x.etvoc));
-        MeterInstance.CreateObservableUpDownCounter("sensor.eco2", () => ToMeasurement(static x => x.eco2));
-        MeterInstance.CreateObservableUpDownCounter("sensor.seismic", () => ToMeasurement(static x => x.seismic));
+        MeterInstance.CreateObservableUpDownCounter("sensor.temperature", () => ToMeasurement(static x => x.Temperature));
+        MeterInstance.CreateObservableUpDownCounter("sensor.humidity", () => ToMeasurement(static x => x.Humidity));
+        MeterInstance.CreateObservableUpDownCounter("sensor.light", () => ToMeasurement(static x => x.Light));
+        MeterInstance.CreateObservableUpDownCounter("sensor.pressure", () => ToMeasurement(static x => x.Pressure));
+        MeterInstance.CreateObservableUpDownCounter("sensor.noise", () => ToMeasurement(static x => x.Noise));
+        MeterInstance.CreateObservableUpDownCounter("sensor.discomfort", () => ToMeasurement(static x => x.Discomfort));
+        MeterInstance.CreateObservableUpDownCounter("sensor.heat", () => ToMeasurement(static x => x.Heat));
+        MeterInstance.CreateObservableUpDownCounter("sensor.etvoc", () => ToMeasurement(static x => x.Etvoc));
+        MeterInstance.CreateObservableUpDownCounter("sensor.eco2", () => ToMeasurement(static x => x.Eco2));
+        MeterInstance.CreateObservableUpDownCounter("sensor.seismic", () => ToMeasurement(static x => x.Seismic));
 
         timer = new Timer(_ => Update(), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(options.Interval));
-    }
-
-    private Measurement<double>[] ToMeasurement(Func<SensorOmronMetrics, double?> selector)
-    {
-        lock (sync)
-        {
-            var value = selector(this);
-            if (value.HasValue)
-            {
-                return [new Measurement<double>(value.Value, new("model", "rbt"), new("id", name))];
-            }
-            return [];
-        }
     }
 
     public void Dispose()
     {
         timer.Dispose();
-        sensor.Dispose();
-        semaphore.Dispose();
+        foreach (var device in devices)
+        {
+            device.Dispose();
+        }
     }
+
+    private List<Measurement<double>> ToMeasurement(Func<Device, double?> selector)
+    {
+        var values = new List<Measurement<double>>(devices.Length);
+
+        // ReSharper disable once LoopCanBeConvertedToQuery
+        foreach (var device in devices)
+        {
+            var value = selector(device);
+            if (value.HasValue)
+            {
+                values.Add(new Measurement<double>(
+                    value.Value,
+                    new("model", "rbt"),
+                    new("address", device.Setting.Port),
+                    new("name", device.Setting.Name)));
+            }
+        }
+
+        return values;
+    }
+
+    private void Update()
+    {
+        foreach (var device in devices)
+        {
+            _ = Task.Run(async () => await device.UpdateAsync());
+        }
+    }
+
+    //--------------------------------------------------------------------------------
+    // Device
+    //--------------------------------------------------------------------------------
+
+    private sealed class Device : IDisposable
+    {
+        private readonly SemaphoreSlim semaphore = new(1, 1);
+
+        private readonly object sync = new();
+
+        private readonly RbtSensorSerial sensor;
+
+        private double? temperature;
+        private double? humidity;
+        private double? light;
+        private double? pressure;
+        private double? noise;
+        private double? discomfort;
+        private double? heat;
+        private double? etvoc;
+        private double? eco2;
+        private double? seismic;
+
+        public DeviceEntry Setting { get; }
+
+        public double? Temperature
+        {
+            get
+            {
+                lock (sync)
+                {
+                    return temperature;
+                }
+            }
+        }
+
+        public double? Humidity
+        {
+            get
+            {
+                lock (sync)
+                {
+                    return humidity;
+                }
+            }
+        }
+
+        public double? Light
+        {
+            get
+            {
+                lock (sync)
+                {
+                    return light;
+                }
+            }
+        }
+
+        public double? Pressure
+        {
+            get
+            {
+                lock (sync)
+                {
+                    return pressure;
+                }
+            }
+        }
+
+        public double? Noise
+        {
+            get
+            {
+                lock (sync)
+                {
+                    return noise;
+                }
+            }
+        }
+
+        public double? Discomfort
+        {
+            get
+            {
+                lock (sync)
+                {
+                    return discomfort;
+                }
+            }
+        }
+
+        public double? Heat
+        {
+            get
+            {
+                lock (sync)
+                {
+                    return heat;
+                }
+            }
+        }
+
+        public double? Etvoc
+        {
+            get
+            {
+                lock (sync)
+                {
+                    return etvoc;
+                }
+            }
+        }
+
+        public double? Eco2
+        {
+            get
+            {
+                lock (sync)
+                {
+                    return eco2;
+                }
+            }
+        }
+
+        public double? Seismic
+        {
+            get
+            {
+                lock (sync)
+                {
+                    return seismic;
+                }
+            }
+        }
+
+        public Device(DeviceEntry setting)
+        {
+            Setting = setting;
+            sensor = new RbtSensorSerial(setting.Port);
+        }
+
+        public void Dispose()
+        {
+            sensor.Dispose();
+            semaphore.Dispose();
+        }
 
 #pragma warning disable CA1031
-    private async void Update()
-    {
-        await semaphore.WaitAsync();
-        try
+        public async ValueTask UpdateAsync()
         {
-            var result = await sensor.UpdateAsync();
-            if (result)
+            await semaphore.WaitAsync();
+            try
             {
-                ReadValues();
+                if (!sensor.IsOpen())
+                {
+                    sensor.Open();
+                }
+
+                var result = await sensor.UpdateAsync();
+                if (result)
+                {
+                    ReadValues();
+                }
+                else
+                {
+                    ClearValues();
+                }
             }
-            else
+            catch
             {
                 ClearValues();
+
+                sensor.Close();
+            }
+            finally
+            {
+                semaphore.Release();
             }
         }
-        catch
-        {
-            ClearValues();
-        }
-        finally
-        {
-            semaphore.Release();
-        }
-    }
 #pragma warning restore CA1031
 
-    private void ReadValues()
-    {
-        lock (sync)
+        private void ReadValues()
         {
-            temperature = sensor.Temperature;
-            humidity = sensor.Humidity;
-            light = sensor.Light;
-            pressure = sensor.Pressure;
-            noise = sensor.Noise;
-            discomfort = sensor.Discomfort;
-            heat = sensor.Heat;
-            etvoc = sensor.Etvoc;
-            eco2 = sensor.Eco2;
-            seismic = sensor.Seismic;
+            lock (sync)
+            {
+                temperature = sensor.Temperature;
+                humidity = sensor.Humidity;
+                light = sensor.Light;
+                pressure = sensor.Pressure;
+                noise = sensor.Noise;
+                discomfort = sensor.Discomfort;
+                heat = sensor.Heat;
+                etvoc = sensor.Etvoc;
+                eco2 = sensor.Eco2;
+                seismic = sensor.Seismic;
+            }
         }
-    }
 
-    private void ClearValues()
-    {
-        lock (sync)
+        private void ClearValues()
         {
-            temperature = null;
-            humidity = null;
-            light = null;
-            pressure = null;
-            noise = null;
-            discomfort = null;
-            heat = null;
-            etvoc = null;
-            eco2 = null;
-            seismic = null;
+            lock (sensor)
+            {
+                temperature = null;
+                humidity = null;
+                light = null;
+                pressure = null;
+                noise = null;
+                discomfort = null;
+                heat = null;
+                etvoc = null;
+                eco2 = null;
+                seismic = null;
+            }
         }
     }
 }

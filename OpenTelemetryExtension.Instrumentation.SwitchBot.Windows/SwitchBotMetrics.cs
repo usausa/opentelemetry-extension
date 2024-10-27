@@ -18,11 +18,12 @@ internal sealed class SwitchBotMetrics : IDisposable
 
     private readonly BluetoothLEAdvertisementWatcher watcher;
 
-    private readonly SortedDictionary<ulong, Data> sensorData = [];
+    private readonly SortedDictionary<ulong, Device> sensorData = [];
 
     public SwitchBotMetrics(SwitchBotOptions options)
     {
         this.options = options;
+        // TODO Device
 
         MeterInstance.CreateObservableUpDownCounter("sensor.rssi", () => ToMeasurement(static x => x.Rssi));
         MeterInstance.CreateObservableUpDownCounter("sensor.temperature", () => ToMeasurement(static x => x.Temperature));
@@ -55,7 +56,7 @@ internal sealed class SwitchBotMetrics : IDisposable
                 {
                     if (!sensorData.TryGetValue(args.BluetoothAddress, out var data))
                     {
-                        data = new Data { Address = args.BluetoothAddress };
+                        data = new Device { Address = args.BluetoothAddress };
                         sensorData[args.BluetoothAddress] = data;
                     }
 
@@ -73,14 +74,13 @@ internal sealed class SwitchBotMetrics : IDisposable
     // Measure
     //--------------------------------------------------------------------------------
 
-    private List<Measurement<double>> ToMeasurement(Func<Data, double?> converter)
+    private List<Measurement<double>> ToMeasurement(Func<Device, double?> converter)
     {
-        var values = new List<Measurement<double>>();
-
         lock (sensorData)
         {
-            var removes = default(List<ulong>?);
+            var values = new List<Measurement<double>>(sensorData.Count);
 
+            var removes = default(List<ulong>?);
             var now = DateTime.Now;
             foreach (var (key, data) in sensorData)
             {
@@ -106,16 +106,16 @@ internal sealed class SwitchBotMetrics : IDisposable
                     sensorData.Remove(key);
                 }
             }
-        }
 
-        return values;
+            return values;
+        }
     }
 
     //--------------------------------------------------------------------------------
-    // Data
+    // Device
     //--------------------------------------------------------------------------------
 
-    private sealed class Data
+    private sealed class Device
     {
         public required ulong Address { get; init; }
 

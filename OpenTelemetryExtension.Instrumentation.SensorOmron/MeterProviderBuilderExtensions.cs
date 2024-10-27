@@ -4,9 +4,6 @@ using OpenTelemetry.Metrics;
 
 public static class MeterProviderBuilderExtensions
 {
-    public static MeterProviderBuilder AddSensorOmronInstrumentation(this MeterProviderBuilder builder, string port) =>
-        AddSensorOmronInstrumentation(builder, options => { options.Port = port; });
-
     public static MeterProviderBuilder AddSensorOmronInstrumentation(this MeterProviderBuilder builder, Action<SensorOmronOptions> configure)
     {
         var options = new SensorOmronOptions();

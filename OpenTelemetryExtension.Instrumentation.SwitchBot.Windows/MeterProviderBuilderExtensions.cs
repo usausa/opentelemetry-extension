@@ -4,9 +4,6 @@ using OpenTelemetry.Metrics;
 
 public static class MeterProviderBuilderExtensions
 {
-    public static MeterProviderBuilder AddSwitchBotInstrumentation(this MeterProviderBuilder builder) =>
-        AddSwitchBotInstrumentation(builder, _ => { });
-
     public static MeterProviderBuilder AddSwitchBotInstrumentation(this MeterProviderBuilder builder, Action<SwitchBotOptions> configure)
     {
         var options = new SwitchBotOptions();
