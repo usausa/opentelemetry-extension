@@ -1,44 +1,45 @@
 # Telemetry Service
 
+- Monitor multiple metrics
+
 ![Grafana](https://github.com/usausa/opentelemetry-extension/blob/main/Document/telemetry.png)
 
-# OpenTelemetryExtension
+# RS-WFWATTCH2
 
-```csharp
-var builder = Host.CreateApplicationBuilder(args);
+![NuGet Downloads](https://img.shields.io/nuget/dt/OpenTelemetryExtension.Instrumentation.WFWattch2)
 
-// Metrics
-builder.Services
-    .AddOpenTelemetry()
-    .WithMetrics(metrics =>
-    {
-        metrics
-            .AddHardwareMonitorInstrumentation()
-            .AddSensorOmronInstrumentation("COM12");
+for [RS-WFWATTCH2](https://www.ratocsystems.com/products/sensor/watt/rswfwattch2/)
 
-        // http://localhost:9464/metrics
-        metrics.AddPrometheusHttpListener();
-    });
+## Metrics
 
-builder.Build().Run();
-```
+(TODO)
 
-## OpenTelemetryExtension.Instrumentation.SensorOmron
+# 2JCIE-BU
 
-[![NuGet Badge](https://buildstats.info/nuget/OpenTelemetryExtension.Instrumentation.SensorOmron)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.SensorOmron/)
+![NuGet Downloads](https://img.shields.io/nuget/dt/OpenTelemetryExtension.Instrumentation.SensorOmron)
 
 for [2JCIE-BU](https://www.fa.omron.co.jp/products/family/3724/lineup.html)
 
 ![Grafana](https://github.com/usausa/opentelemetry-extension/blob/main/Document/sensor.png)
 
-## OpenTelemetryExtension.Instrumentation.HardwareMonitor
+## Metrics
 
-[![NuGet Badge](https://buildstats.info/nuget/OpenTelemetryExtension.Instrumentation.HardwareMonitor)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.HardwareMonitor/)
+(TODO)
 
-- [X] Memory
-- [X] Network
-- [X] Storage (limited)
-- [X] Battery
-- [X] I/O
-- [X] Cpu
-- [X] Gpu
+# SwitchBot Meter
+
+![NuGet Downloads](https://img.shields.io/nuget/dt/OpenTelemetryExtension.Instrumentation.SwitchBot.Windows)
+
+for [SwitchBot Meter](https://www.switchbot.jp/products/switchbot-meter)
+
+## Metrics
+
+(TODO)
+
+# OpenHardwareMonitor
+
+![NuGet Downloads](https://img.shields.io/nuget/dt/OpenTelemetryExtension.Instrumentation.HardwareMonitor)
+
+## Metrics
+
+(TODO)
