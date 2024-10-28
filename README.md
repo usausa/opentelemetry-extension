@@ -1,6 +1,6 @@
 # Telemetry Service
 
-(TNG)
+![Grafana](https://github.com/usausa/opentelemetry-extension/blob/main/Document/telemetry.png)
 
 # OpenTelemetryExtension
 
