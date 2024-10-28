@@ -18,9 +18,9 @@ for [RS-WFWATTCH2](https://www.ratocsystems.com/products/sensor/watt/rswfwattch2
 ## Metrics
 
 ```
-sensor.power
-sensor.current
-sensor.voltage
+sensor_power
+sensor_current
+sensor_voltage
 ```
 
 # SwitchBot Meter
@@ -37,10 +37,10 @@ for [SwitchBot Meter](https://www.switchbot.jp/products/switchbot-meter)
 ## Metrics
 
 ```
-sensor.rssi
-sensor.temperature
-sensor.humidity
-sensor.co2
+sensor_rssi
+sensor_temperature
+sensor_humidity
+sensor_co2
 ```
 
 # 2JCIE-BU
@@ -59,16 +59,16 @@ for [2JCIE-BU](https://www.fa.omron.co.jp/products/family/3724/lineup.html)
 ## Metrics
 
 ```
-sensor.temperature
-sensor.humidity
-sensor.light
-sensor.pressure
-sensor.noise
-sensor.discomfort
-sensor.heat
-sensor.tvoc
-sensor.co2
-sensor.seismic
+sensor_temperature
+sensor_humidity
+sensor_light
+sensor_pressure
+sensor_noise
+sensor_discomfort
+sensor_heat
+sensor_tvoc
+sensor_co2
+sensor_seismic
 ```
 
 # OpenHardwareMonitor
@@ -83,42 +83,42 @@ sensor.seismic
 ## Metrics
 
 ```
-hardware.battery.charge
-hardware.battery.degradation
-hardware.battery.voltage
-hardware.battery.current
-hardware.battery.capacity
-hardware.battery.rate
-hardware.battery.remaining
-hardware.cpu.load
-hardware.cpu.clock
-hardware.cpu.temperature
-hardware.cpu.voltage
-hardware.cpu.current
-hardware.cpu.power
-hardware.gpu.load
-hardware.gpu.clock
-hardware.gpu.fan
-hardware.gpu.temperature
-hardware.gpu.power
-hardware.gpu.memory
-hardware.gpu.throughput
-hardware.io.control
-hardware.io.fan
-hardware.io.temperature
-hardware.io.voltage
-hardware.memory.used
-hardware.memory.available
-hardware.memory.load
-hardware.storage.used
-hardware.storage.bytes
-hardware.storage.speed
-hardware.storage.temperature
-hardware.storage.life
-hardware.storage.amplification
-hardware.storage.spare
-hardware.network.bytes
-hardware.network.speed
-hardware.network.load
+hardware_battery_charge
+hardware_battery_degradation
+hardware_battery_voltage
+hardware_battery_current
+hardware_battery_capacity
+hardware_battery_rate
+hardware_battery_remaining
+hardware_cpu_load
+hardware_cpu_clock
+hardware_cpu_temperature
+hardware_cpu_voltage
+hardware_cpu_current
+hardware_cpu_power
+hardware_gpu_load
+hardware_gpu_clock
+hardware_gpu_fan
+hardware_gpu_temperature
+hardware_gpu_power
+hardware_gpu_memory
+hardware_gpu_throughput
+hardware_io_control
+hardware_io_fan
+hardware_io_temperature
+hardware_io_voltage
+hardware_memory_used
+hardware_memory_available
+hardware_memory_load
+hardware_storage_used
+hardware_storage_bytes
+hardware_storage_speed
+hardware_storage_temperature
+hardware_storage_life
+hardware_storage_amplification
+hardware_storage_spare
+hardware_network_bytes
+hardware_network_speed
+hardware_network_load
 ```
 
