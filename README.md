@@ -8,6 +8,11 @@
 
 ![NuGet Downloads](https://img.shields.io/nuget/dt/OpenTelemetryExtension.Instrumentation.WFWattch2)
 
+|OS|Support|
+|:----|:----|
+|Windows|✅|
+|Linux|✅|
+
 for [RS-WFWATTCH2](https://www.ratocsystems.com/products/sensor/watt/rswfwattch2/)
 
 ## Metrics
@@ -21,6 +26,11 @@ sensor.voltage
 # SwitchBot Meter
 
 ![NuGet Downloads](https://img.shields.io/nuget/dt/OpenTelemetryExtension.Instrumentation.SwitchBot.Windows)
+
+|OS|Support|
+|:----|:----|
+|Windows|✅|
+|Linux||
 
 for [SwitchBot Meter](https://www.switchbot.jp/products/switchbot-meter)
 
@@ -36,6 +46,11 @@ sensor.co2
 # 2JCIE-BU
 
 ![NuGet Downloads](https://img.shields.io/nuget/dt/OpenTelemetryExtension.Instrumentation.SensorOmron)
+
+|OS|Support|
+|:----|:----|
+|Windows|✅|
+|Linux|✅|
 
 for [2JCIE-BU](https://www.fa.omron.co.jp/products/family/3724/lineup.html)
 
@@ -59,6 +74,11 @@ sensor.seismic
 # OpenHardwareMonitor
 
 ![NuGet Downloads](https://img.shields.io/nuget/dt/OpenTelemetryExtension.Instrumentation.HardwareMonitor)
+
+|OS|Support|
+|:----|:----|
+|Windows|✅|
+|Linux||
 
 ## Metrics
 
