@@ -6,7 +6,7 @@
 
 # RS-WFWATTCH2
 
-![NuGet Downloads](https://img.shields.io/nuget/vpre/OpenTelemetryExtension.Instrumentation.WFWattch2)
+[![NuGet](https://img.shields.io/nuget/dt/OpenTelemetryExtension.Instrumentation.WFWattch2)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.WFWattch2/)
 
 |OS|Support|
 |:----|:----|
@@ -25,7 +25,7 @@ sensor.voltage
 
 # SwitchBot Meter
 
-![NuGet Downloads](https://img.shields.io/nuget/vpre/OpenTelemetryExtension.Instrumentation.SwitchBot.Windows)
+[![NuGet](https://img.shields.io/nuget/dt/OpenTelemetryExtension.Instrumentation.SwitchBot.Windows)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.SwitchBot.Windows/)
 
 |OS|Support|
 |:----|:----|
@@ -45,7 +45,7 @@ sensor.co2
 
 # 2JCIE-BU
 
-![NuGet Downloads](https://img.shields.io/nuget/vpre/OpenTelemetryExtension.Instrumentation.SensorOmron)
+[![NuGet](https://img.shields.io/nuget/dt/OpenTelemetryExtension.Instrumentation.SensorOmron)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.SensorOmron/)
 
 |OS|Support|
 |:----|:----|
@@ -73,7 +73,7 @@ sensor.seismic
 
 # OpenHardwareMonitor
 
-![NuGet Downloads](https://img.shields.io/nuget/vpre/OpenTelemetryExtension.Instrumentation.HardwareMonitor)
+[![NuGet](https://img.shields.io/nuget/dt/OpenTelemetryExtension.Instrumentation.HardwareMonitor)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.HardwareMonitor/)
 
 |OS|Support|
 |:----|:----|
