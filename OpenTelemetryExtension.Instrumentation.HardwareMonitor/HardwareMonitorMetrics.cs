@@ -113,14 +113,16 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private Measurement<double>[] MeasureSensor(ISensor[] sensors)
     {
+        var host = Environment.MachineName;
         lock (computer)
         {
             var values = new Measurement<double>[sensors.Length];
 
             for (var i = 0; i < sensors.Length; i++)
             {
+                // TODO
                 var sensor = sensors[i];
-                values[i] = new Measurement<double>(ToValue(sensor), new KeyValuePair<string, object?>[] { new("name", sensor.Name) });
+                values[i] = new Measurement<double>(ToValue(sensor), new("name", sensor.Name), new("host", host));
             }
 
             return values;
@@ -603,6 +605,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private Measurement<double>[] MeasureStorage(ISensor[] sensors)
     {
+        var host = Environment.MachineName;
         lock (computer)
         {
             var values = new Measurement<double>[sensors.Length];
@@ -610,7 +613,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
             for (var i = 0; i < sensors.Length; i++)
             {
                 var sensor = sensors[i];
-                values[i] = new Measurement<double>(ToValue(sensor), new KeyValuePair<string, object?>[] { new("name", sensor.Hardware.Name) });
+                values[i] = new Measurement<double>(ToValue(sensor), new("name", sensor.Hardware.Name), new("host", host));
             }
 
             return values;
@@ -619,6 +622,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private Measurement<double>[] MeasureStorage(ISensor[] readSensors, ISensor[] writeSensors)
     {
+        var host = Environment.MachineName;
         lock (computer)
         {
             var values = new Measurement<double>[writeSensors.Length + readSensors.Length];
@@ -627,8 +631,8 @@ internal sealed class HardwareMonitorMetrics : IDisposable
             {
                 var readSensor = readSensors[i];
                 var writeSensor = writeSensors[i];
-                values[i * 2] = new Measurement<double>(ToValue(readSensor), new("name", readSensor.Hardware.Name), new("type", "read"));
-                values[(i * 2) + 1] = new Measurement<double>(ToValue(writeSensor), new("name", writeSensor.Hardware.Name), new("type", "write"));
+                values[i * 2] = new Measurement<double>(ToValue(readSensor), new("name", readSensor.Hardware.Name), new("type", "read"), new("host", host));
+                values[(i * 2) + 1] = new Measurement<double>(ToValue(writeSensor), new("name", writeSensor.Hardware.Name), new("type", "write"), new("host", host));
             }
 
             return values;
@@ -637,6 +641,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private Measurement<double>[] MeasureStorageLife(ISensor[] sensors)
     {
+        var host = Environment.MachineName;
         lock (computer)
         {
             var values = new Measurement<double>[sensors.Length];
@@ -646,11 +651,11 @@ internal sealed class HardwareMonitorMetrics : IDisposable
                 var sensor = sensors[i];
                 if (sensor.Name == "Percentage Used")
                 {
-                    values[i] = new Measurement<double>(100 - ToValue(sensor), new KeyValuePair<string, object?>[] { new("name", sensor.Hardware.Name) });
+                    values[i] = new Measurement<double>(100 - ToValue(sensor), new("name", sensor.Hardware.Name), new("host", host));
                 }
                 else
                 {
-                    values[i] = new Measurement<double>(ToValue(sensor), new KeyValuePair<string, object?>[] { new("name", sensor.Hardware.Name) });
+                    values[i] = new Measurement<double>(ToValue(sensor), new("name", sensor.Hardware.Name), new("host", host));
                 }
             }
 
@@ -702,6 +707,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private Measurement<double>[] MeasureNetwork(ISensor[] sensors)
     {
+        var host = Environment.MachineName;
         lock (computer)
         {
             var values = new Measurement<double>[sensors.Length];
@@ -709,7 +715,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
             for (var i = 0; i < sensors.Length; i++)
             {
                 var sensor = sensors[i];
-                values[i] = new Measurement<double>(ToValue(sensor), new KeyValuePair<string, object?>[] { new("name", sensor.Hardware.Name) });
+                values[i] = new Measurement<double>(ToValue(sensor), new("name", sensor.Hardware.Name), new("host", host));
             }
 
             return values;
@@ -718,6 +724,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private Measurement<double>[] MeasureNetwork(ISensor[] downloadSensors, ISensor[] uploadSensors)
     {
+        var host = Environment.MachineName;
         lock (computer)
         {
             var values = new Measurement<double>[uploadSensors.Length + downloadSensors.Length];
@@ -726,8 +733,8 @@ internal sealed class HardwareMonitorMetrics : IDisposable
             {
                 var downloadSensor = downloadSensors[i];
                 var uploadSensor = uploadSensors[i];
-                values[i * 2] = new Measurement<double>(ToValue(downloadSensor), new("name", downloadSensor.Hardware.Name), new("type", "download"));
-                values[(i * 2) + 1] = new Measurement<double>(ToValue(uploadSensor), new("name", uploadSensor.Hardware.Name), new("type", "upload"));
+                values[i * 2] = new Measurement<double>(ToValue(downloadSensor), new("name", downloadSensor.Hardware.Name), new("type", "download"), new("host", host));
+                values[(i * 2) + 1] = new Measurement<double>(ToValue(uploadSensor), new("name", uploadSensor.Hardware.Name), new("type", "upload"), new("host", host));
             }
 
             return values;
