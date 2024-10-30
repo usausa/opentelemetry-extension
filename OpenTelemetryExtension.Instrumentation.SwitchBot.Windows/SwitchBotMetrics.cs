@@ -29,12 +29,25 @@ internal sealed class SwitchBotMetrics : IDisposable
         log.InfoMetricsEnabled(nameof(SwitchBotMetrics));
 
         this.options = options;
-        devices = options.Device.Select(static x => new Device(x)).ToArray();
+        devices = options.Device.Select(static x => CreateDevice(x)).ToArray();
+        var meters = devices.Count(static x => x.Setting.Type == DeviceType.Meter);
+        var plugs = devices.Count(static x => x.Setting.Type == DeviceType.PlugMini);
 
-        MeterInstance.CreateObservableUpDownCounter("sensor.rssi", () => ToMeasurement(static x => x.Rssi));
-        MeterInstance.CreateObservableUpDownCounter("sensor.temperature", () => ToMeasurement(static x => x.Temperature));
-        MeterInstance.CreateObservableUpDownCounter("sensor.humidity", () => ToMeasurement(static x => x.Humidity));
-        MeterInstance.CreateObservableUpDownCounter("sensor.co2", () => ToMeasurement(static x => x.Co2));
+        MeterInstance.CreateObservableUpDownCounter(
+            "sensor.rssi",
+            () => ToMeasurement<Device>(devices.Length, static x => x.Rssi));
+        MeterInstance.CreateObservableUpDownCounter(
+            "sensor.temperature",
+            () => ToMeasurement<MeterDevice>(meters, static x => x.Temperature));
+        MeterInstance.CreateObservableUpDownCounter(
+            "sensor.humidity",
+            () => ToMeasurement<MeterDevice>(meters, static x => x.Humidity));
+        MeterInstance.CreateObservableUpDownCounter(
+            "sensor.co2",
+            () => ToMeasurement<MeterDevice>(meters, static x => x.Co2));
+        MeterInstance.CreateObservableUpDownCounter(
+            "sensor.power",
+            () => ToMeasurement<PlugMiniDevice>(plugs, static x => x.Power));
 
         watcher = new BluetoothLEAdvertisementWatcher
         {
@@ -42,6 +55,16 @@ internal sealed class SwitchBotMetrics : IDisposable
         };
         watcher.Received += OnWatcherReceived;
         watcher.Start();
+    }
+
+    private static Device CreateDevice(DeviceEntry entry)
+    {
+        return entry.Type switch
+        {
+            DeviceType.Meter => new MeterDevice(entry),
+            DeviceType.PlugMini => new PlugMiniDevice(entry),
+            _ => throw new ArgumentException($"Invalid device type. type=[{entry.Type}]")
+        };
     }
 
     public void Dispose()
@@ -54,15 +77,16 @@ internal sealed class SwitchBotMetrics : IDisposable
     // Measure
     //--------------------------------------------------------------------------------
 
-    private List<Measurement<double>> ToMeasurement(Func<Device, double?> selector)
+    private List<Measurement<double>> ToMeasurement<T>(int hint, Func<T, double?> selector)
+        where T : Device
     {
+        var values = new List<Measurement<double>>(hint);
+
+        var now = DateTime.Now;
         lock (devices)
         {
-            var values = new List<Measurement<double>>(devices.Length);
-
-            var now = DateTime.Now;
             // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var device in devices)
+            foreach (var device in devices.OfType<T>())
             {
                 if ((now - device.LastUpdate).TotalSeconds > options.TimeThreshold)
                 {
@@ -79,9 +103,9 @@ internal sealed class SwitchBotMetrics : IDisposable
                         new("name", device.Setting.Name)));
                 }
             }
-
-            return values;
         }
+
+        return values;
     }
 
     //--------------------------------------------------------------------------------
@@ -100,14 +124,25 @@ internal sealed class SwitchBotMetrics : IDisposable
                     return;
                 }
 
+                device.LastUpdate = DateTime.Now;
+                device.Rssi = args.RawSignalStrengthInDBm;
+
                 var buffer = md.Data.ToArray();
-                if (buffer.Length >= 11)
+                if (device is MeterDevice meter)
                 {
-                    device.LastUpdate = DateTime.Now;
-                    device.Rssi = args.RawSignalStrengthInDBm;
-                    device.Temperature = (((double)(buffer[8] & 0x0f) / 10) + (buffer[9] & 0x7f)) * ((buffer[9] & 0x80) > 0 ? 1 : -1);
-                    device.Humidity = buffer[10] & 0x7f;
-                    device.Co2 = buffer.Length >= 16 ? (buffer[13] << 8) + buffer[14] : null;
+                    if (buffer.Length >= 11)
+                    {
+                        meter.Temperature = (((double)(buffer[8] & 0x0f) / 10) + (buffer[9] & 0x7f)) * ((buffer[9] & 0x80) > 0 ? 1 : -1);
+                        meter.Humidity = buffer[10] & 0x7f;
+                        meter.Co2 = buffer.Length >= 16 ? (buffer[13] << 8) + buffer[14] : null;
+                    }
+                }
+                else if (device is PlugMiniDevice plug)
+                {
+                    if (buffer.Length >= 12)
+                    {
+                        plug.Power = (double)(((buffer[10] & 0b00111111) << 8) + (buffer[11] & 0b01111111)) / 10;
+                    }
                 }
             }
         }
@@ -117,7 +152,7 @@ internal sealed class SwitchBotMetrics : IDisposable
     // Device
     //--------------------------------------------------------------------------------
 
-    private sealed class Device
+    private abstract class Device
     {
         public ulong Address { get; }
 
@@ -127,18 +162,36 @@ internal sealed class SwitchBotMetrics : IDisposable
 
         public double Rssi { get; set; }
 
+        protected Device(DeviceEntry setting)
+        {
+            Setting = setting;
+            Address = Convert.ToUInt64(
+                setting.Address.Replace(":", string.Empty, StringComparison.Ordinal).Replace("-", string.Empty, StringComparison.Ordinal),
+                16);
+        }
+    }
+
+    private sealed class MeterDevice : Device
+    {
         public double Temperature { get; set; }
 
         public double Humidity { get; set; }
 
         public double? Co2 { get; set; }
 
-        public Device(DeviceEntry setting)
+        public MeterDevice(DeviceEntry setting)
+            : base(setting)
         {
-            Setting = setting;
-            Address = Convert.ToUInt64(
-                setting.Address.Replace(":", string.Empty, StringComparison.Ordinal).Replace("-", string.Empty, StringComparison.Ordinal),
-                16);
+        }
+    }
+
+    private sealed class PlugMiniDevice : Device
+    {
+        public double Power { get; set; }
+
+        public PlugMiniDevice(DeviceEntry setting)
+            : base(setting)
+        {
         }
     }
 }

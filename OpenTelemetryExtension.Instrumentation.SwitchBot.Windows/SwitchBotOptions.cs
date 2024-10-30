@@ -1,7 +1,15 @@
 namespace OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
 
+public enum DeviceType
+{
+    Meter,
+    PlugMini
+}
+
 public sealed class DeviceEntry
 {
+    public DeviceType Type { get; set; }
+
     public string Address { get; set; } = default!;
 
     public string Name { get; set; } = default!;
