@@ -15,6 +15,8 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private static readonly Meter MeterInstance = new(MeterName, AssemblyName.Version!.ToString());
 
+    private readonly HardwareMonitorOptions options;
+
     private readonly Computer computer;
 
     private readonly UpdateVisitor updateVisitor = new();
@@ -26,6 +28,8 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         HardwareMonitorOptions options)
     {
         log.InfoMetricsEnabled(nameof(HardwareMonitorMetrics));
+
+        this.options = options;
 
         computer = new Computer
         {
@@ -113,14 +117,13 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private Measurement<double>[] MeasureSensor(ISensor[] sensors)
     {
-        var host = Environment.MachineName;
+        var host = options.Host ?? Environment.MachineName;
         lock (computer)
         {
             var values = new Measurement<double>[sensors.Length];
 
             for (var i = 0; i < sensors.Length; i++)
             {
-                // TODO
                 var sensor = sensors[i];
                 values[i] = new Measurement<double>(ToValue(sensor), new("name", sensor.Name), new("host", host));
             }
@@ -605,7 +608,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private Measurement<double>[] MeasureStorage(ISensor[] sensors)
     {
-        var host = Environment.MachineName;
+        var host = options.Host ?? Environment.MachineName;
         lock (computer)
         {
             var values = new Measurement<double>[sensors.Length];
@@ -622,7 +625,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private Measurement<double>[] MeasureStorage(ISensor[] readSensors, ISensor[] writeSensors)
     {
-        var host = Environment.MachineName;
+        var host = options.Host ?? Environment.MachineName;
         lock (computer)
         {
             var values = new Measurement<double>[writeSensors.Length + readSensors.Length];
@@ -641,7 +644,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private Measurement<double>[] MeasureStorageLife(ISensor[] sensors)
     {
-        var host = Environment.MachineName;
+        var host = options.Host ?? Environment.MachineName;
         lock (computer)
         {
             var values = new Measurement<double>[sensors.Length];
@@ -707,7 +710,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private Measurement<double>[] MeasureNetwork(ISensor[] sensors)
     {
-        var host = Environment.MachineName;
+        var host = options.Host ?? Environment.MachineName;
         lock (computer)
         {
             var values = new Measurement<double>[sensors.Length];
@@ -724,7 +727,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private Measurement<double>[] MeasureNetwork(ISensor[] downloadSensors, ISensor[] uploadSensors)
     {
-        var host = Environment.MachineName;
+        var host = options.Host ?? Environment.MachineName;
         lock (computer)
         {
             var values = new Measurement<double>[uploadSensors.Length + downloadSensors.Length];

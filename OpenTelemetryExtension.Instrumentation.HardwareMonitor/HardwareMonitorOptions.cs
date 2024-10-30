@@ -21,4 +21,6 @@ public sealed class HardwareMonitorOptions
     //public bool IsPsuEnabled { get; set; } = true;
 
     public bool IsStorageEnabled { get; set; } = true;
+
+    public string? Host { get; set; }
 }
