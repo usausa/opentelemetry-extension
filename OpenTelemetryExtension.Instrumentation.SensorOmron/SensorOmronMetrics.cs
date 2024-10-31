@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 internal sealed class SensorOmronMetrics : IDisposable
 {
     internal static readonly AssemblyName AssemblyName = typeof(SensorOmronMetrics).Assembly.GetName();
-    internal static readonly string MeterName = AssemblyName.Name!;
+    internal static readonly string MeterName = AssemblyName.Name!.Replace(".Instrumentation", string.Empty, StringComparison.Ordinal);
 
     private static readonly Meter MeterInstance = new(MeterName, AssemblyName.Version!.ToString());
 
