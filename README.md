@@ -1,6 +1,6 @@
 # Telemetry Service
 
-- Monitor multiple metrics
+- Multiple metrics monitoring service
 
 ![Grafana](https://github.com/usausa/opentelemetry-extension/blob/main/Document/telemetry.png)
 
@@ -32,15 +32,23 @@ sensor_voltage
 |Windows|✅|
 |Linux||
 
-for [SwitchBot Meter](https://www.switchbot.jp/products/switchbot-meter)
+for [SwitchBot Meter](https://www.switchbot.jp/products/switchbot-meter) and [SwitchBot Plug Mini](https://www.switchbot.jp/products/switchbot-plug-mini)
 
 ## Metrics
+
+### Meter
 
 ```
 sensor_rssi
 sensor_temperature
 sensor_humidity
 sensor_co2
+```
+
+### Plug Mini
+
+```
+sensor_power
 ```
 
 # 2JCIE-BU
@@ -71,7 +79,7 @@ sensor_co2
 sensor_seismic
 ```
 
-# OpenHardwareMonitor
+# Libre Hardware Monitor
 
 [![NuGet](https://img.shields.io/nuget/v/OpenTelemetryExtension.Instrumentation.HardwareMonitor)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.HardwareMonitor/)
 
@@ -121,4 +129,3 @@ hardware_network_bytes
 hardware_network_speed
 hardware_network_load
 ```
-
