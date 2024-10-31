@@ -129,3 +129,9 @@ hardware_network_bytes
 hardware_network_speed
 hardware_network_load
 ```
+
+# Install
+
+## Windows
+
+(TODO)
