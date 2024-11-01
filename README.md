@@ -134,4 +134,28 @@ hardware_network_load
 
 ## Windows
 
-(TODO)
+Copy files to install directory.
+
+* TelemetryService.exe
+* appsettings.json
+
+```
+sc create TelemetryService binPath=(install directory)\TelemetryService.exe start=auto
+```
+
+```
+sc start TelemetryService
+```
+
+## Linux
+
+## Prometheus
+
+Add targets to prometheus.yml.
+
+```yaml
+  - job_name: 'telemetry'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['192.168.1.101:9228']
+```
