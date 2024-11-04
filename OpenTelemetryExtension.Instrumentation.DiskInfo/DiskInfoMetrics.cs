@@ -32,8 +32,40 @@ internal sealed class DiskInfoMetrics : IDisposable
 
         var nvme = disks.Count(static x => x.DiskType == DiskType.Nvme);
         // ReSharper disable StringLiteralTypo
-        MeterInstance.CreateObservableUpDownCounter("smart.powercycle", () => GatherMeasurementNvme(nvme, static x => x.PowerCycle));
-        MeterInstance.CreateObservableUpDownCounter("smart.poweronhours", () => GatherMeasurementNvme(nvme, static x => x.PowerOnHours));
+        MeterInstance.CreateObservableUpDownCounter("smart.availablespare",
+            () => GatherMeasurementNvme(nvme, static x => x.AvailableSpare));
+        MeterInstance.CreateObservableUpDownCounter("smart.availablesparethreshold",
+            () => GatherMeasurementNvme(nvme, static x => x.AvailableSpareThreshold));
+        MeterInstance.CreateObservableUpDownCounter("smart.controllerbusytime",
+            () => GatherMeasurementNvme(nvme, static x => x.ControllerBusyTime));
+        MeterInstance.CreateObservableUpDownCounter("smart.criticalcompositetemperaturetime",
+            () => GatherMeasurementNvme(nvme, static x => x.CriticalCompositeTemperatureTime));
+        MeterInstance.CreateObservableUpDownCounter("smart.criticalwarning",
+            () => GatherMeasurementNvme(nvme, static x => x.CriticalWarning));
+        MeterInstance.CreateObservableUpDownCounter("smart.dataread",
+            () => GatherMeasurementNvme(nvme, static x => x.DataUnitRead * 512 * 1000));
+        MeterInstance.CreateObservableUpDownCounter("smart.datawritten",
+            () => GatherMeasurementNvme(nvme, static x => x.DataUnitWritten * 512 * 1000));
+        MeterInstance.CreateObservableUpDownCounter("smart.errorinfologentrycount",
+            () => GatherMeasurementNvme(nvme, static x => x.ErrorInfoLogEntryCount));
+        MeterInstance.CreateObservableUpDownCounter("smart.hostreadcommands",
+            () => GatherMeasurementNvme(nvme, static x => x.HostReadCommands));
+        MeterInstance.CreateObservableUpDownCounter("smart.hostwritecommands",
+            () => GatherMeasurementNvme(nvme, static x => x.HostWriteCommands));
+        MeterInstance.CreateObservableUpDownCounter("smart.mediaerrors",
+            () => GatherMeasurementNvme(nvme, static x => x.MediaErrors));
+        MeterInstance.CreateObservableUpDownCounter("smart.percentageused",
+            () => GatherMeasurementNvme(nvme, static x => x.PercentageUsed));
+        MeterInstance.CreateObservableUpDownCounter("smart.powercycle",
+            () => GatherMeasurementNvme(nvme, static x => x.PowerCycle));
+        MeterInstance.CreateObservableUpDownCounter("smart.poweronhours",
+            () => GatherMeasurementNvme(nvme, static x => x.PowerOnHours));
+        MeterInstance.CreateObservableUpDownCounter("smart.temperature",
+            () => GatherMeasurementNvme(nvme, static x => x.Temperature));
+        MeterInstance.CreateObservableUpDownCounter("smart.unsafeshutdowns",
+            () => GatherMeasurementNvme(nvme, static x => x.UnsafeShutdowns));
+        MeterInstance.CreateObservableUpDownCounter("smart.warningcompositetemperaturetime",
+            () => GatherMeasurementNvme(nvme, static x => x.WarningCompositeTemperatureTime));
         // ReSharper restore StringLiteralTypo
 
         // TODO
@@ -82,8 +114,7 @@ internal sealed class DiskInfoMetrics : IDisposable
             // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var disk in disks)
             {
-                // TODO Last update
-                if (disk.Smart is ISmartNvme smart)
+                if ((disk.Smart is ISmartNvme smart) && smart.LastUpdate)
                 {
                     var value = selector(smart);
                     if (value.HasValue)
@@ -91,6 +122,7 @@ internal sealed class DiskInfoMetrics : IDisposable
                         values.Add(new Measurement<double>(value.Value, MakeTags(disk.Index, disk.Model)));
                     }
                 }
+                // TODO
             }
 
             return values;
