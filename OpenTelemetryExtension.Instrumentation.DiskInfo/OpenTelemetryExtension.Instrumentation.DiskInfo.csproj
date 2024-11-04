@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <CodeAnalysisRuleSet>..\Analyzers.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>OpenTelemetryExtension.Instrumentation.DiskInfo</PackageId>
+    <Title>OpenTelemetryExtension.Instrumentation.DiskInfo</Title>
+    <Description>OpenTelemetry extension.</Description>
+    <PackageTags>opentelemetry metrics monitoring telemetry</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HardwareInfo.Disk" Version="0.1.0" />
+    <PackageReference Include="OpenTelemetry" Version="1.9.0" />
+  </ItemGroup>
+
+</Project>

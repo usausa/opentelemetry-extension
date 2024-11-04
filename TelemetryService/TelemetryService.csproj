@@ -28,6 +28,9 @@
   <ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
     <ProjectReference Include="..\OpenTelemetryExtension.Instrumentation.HardwareMonitor\OpenTelemetryExtension.Instrumentation.HardwareMonitor.csproj" />
   </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
+    <ProjectReference Include="..\OpenTelemetryExtension.Instrumentation.DiskInfo\OpenTelemetryExtension.Instrumentation.DiskInfo.csproj" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenTelemetryExtension.Instrumentation.SensorOmron\OpenTelemetryExtension.Instrumentation.SensorOmron.csproj" />
   </ItemGroup>

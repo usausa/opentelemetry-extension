@@ -3,6 +3,9 @@ namespace TelemetryService.Settings;
 #if WINDOWS_TELEMETRY
 using OpenTelemetryExtension.Instrumentation.HardwareMonitor;
 #endif
+#if WINDOWS_TELEMETRY
+using OpenTelemetryExtension.Instrumentation.DiskInfo;
+#endif
 using OpenTelemetryExtension.Instrumentation.SensorOmron;
 using OpenTelemetryExtension.Instrumentation.WFWattch2;
 #if WINDOWS_TELEMETRY
@@ -22,6 +25,10 @@ public sealed class TelemetrySetting
     public bool EnableHardwareMetrics { get; set; }
 #endif
 
+#if WINDOWS_TELEMETRY
+    public bool EnableDiskInfoMetrics { get; set; }
+#endif
+
     public bool EnableSensorOmronMetrics { get; set; }
 
     public bool EnableWFWattch2Metrics { get; set; }
@@ -34,6 +41,10 @@ public sealed class TelemetrySetting
 
 #if WINDOWS_TELEMETRY
     public HardwareMonitorOptions HardwareMonitor { get; set; } = default!;
+#endif
+
+#if WINDOWS_TELEMETRY
+    public DiskInfoOptions DiskInfo { get; set; } = default!;
 #endif
 
     public SensorOmronOptions SensorOmron { get; set; } = default!;

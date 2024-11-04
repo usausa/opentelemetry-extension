@@ -6,6 +6,9 @@ using OpenTelemetry;
 #if WINDOWS_TELEMETRY
 using OpenTelemetryExtension.Instrumentation.HardwareMonitor;
 #endif
+#if WINDOWS_TELEMETRY
+using OpenTelemetryExtension.Instrumentation.DiskInfo;
+#endif
 using OpenTelemetryExtension.Instrumentation.SensorOmron;
 using OpenTelemetryExtension.Instrumentation.WFWattch2;
 #if WINDOWS_TELEMETRY
@@ -51,6 +54,12 @@ builder.Services
         if (setting.EnableHardwareMetrics)
         {
             metrics.AddHardwareMonitorInstrumentation(setting.HardwareMonitor);
+        }
+#endif
+#if WINDOWS_TELEMETRY
+        if (setting.EnableDiskInfoMetrics)
+        {
+            metrics.AddDiskInfoInstrumentation(setting.DiskInfo);
         }
 #endif
         if (setting.EnableSensorOmronMetrics)
