@@ -26,16 +26,16 @@ internal sealed class SensorOmronMetrics : IDisposable
 
         devices = options.Device.Select(static x => new Device(x)).ToArray();
 
-        MeterInstance.CreateObservableUpDownCounter("sensor.temperature", () => ToMeasurement(static x => x.Temperature));
-        MeterInstance.CreateObservableUpDownCounter("sensor.humidity", () => ToMeasurement(static x => x.Humidity));
-        MeterInstance.CreateObservableUpDownCounter("sensor.light", () => ToMeasurement(static x => x.Light));
-        MeterInstance.CreateObservableUpDownCounter("sensor.pressure", () => ToMeasurement(static x => x.Pressure));
-        MeterInstance.CreateObservableUpDownCounter("sensor.noise", () => ToMeasurement(static x => x.Noise));
-        MeterInstance.CreateObservableUpDownCounter("sensor.discomfort", () => ToMeasurement(static x => x.Discomfort));
-        MeterInstance.CreateObservableUpDownCounter("sensor.heat", () => ToMeasurement(static x => x.Heat));
-        MeterInstance.CreateObservableUpDownCounter("sensor.tvoc", () => ToMeasurement(static x => x.Etvoc));
-        MeterInstance.CreateObservableUpDownCounter("sensor.co2", () => ToMeasurement(static x => x.Eco2));
-        MeterInstance.CreateObservableUpDownCounter("sensor.seismic", () => ToMeasurement(static x => x.Seismic));
+        MeterInstance.CreateObservableUpDownCounter("sensor.temperature", () => GatherMeasurement(static x => x.Temperature));
+        MeterInstance.CreateObservableUpDownCounter("sensor.humidity", () => GatherMeasurement(static x => x.Humidity));
+        MeterInstance.CreateObservableUpDownCounter("sensor.light", () => GatherMeasurement(static x => x.Light));
+        MeterInstance.CreateObservableUpDownCounter("sensor.pressure", () => GatherMeasurement(static x => x.Pressure));
+        MeterInstance.CreateObservableUpDownCounter("sensor.noise", () => GatherMeasurement(static x => x.Noise));
+        MeterInstance.CreateObservableUpDownCounter("sensor.discomfort", () => GatherMeasurement(static x => x.Discomfort));
+        MeterInstance.CreateObservableUpDownCounter("sensor.heat", () => GatherMeasurement(static x => x.Heat));
+        MeterInstance.CreateObservableUpDownCounter("sensor.tvoc", () => GatherMeasurement(static x => x.Etvoc));
+        MeterInstance.CreateObservableUpDownCounter("sensor.co2", () => GatherMeasurement(static x => x.Eco2));
+        MeterInstance.CreateObservableUpDownCounter("sensor.seismic", () => GatherMeasurement(static x => x.Seismic));
 
         timer = new Timer(_ => Update(), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(options.Interval));
     }
@@ -49,7 +49,7 @@ internal sealed class SensorOmronMetrics : IDisposable
         }
     }
 
-    private List<Measurement<double>> ToMeasurement(Func<Device, double?> selector)
+    private List<Measurement<double>> GatherMeasurement(Func<Device, double?> selector)
     {
         var values = new List<Measurement<double>>(devices.Length);
 
