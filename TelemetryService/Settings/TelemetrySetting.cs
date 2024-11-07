@@ -1,16 +1,19 @@
 namespace TelemetryService.Settings;
 
 #if WINDOWS_TELEMETRY
+using OpenTelemetryExtension.Instrumentation.DiskInfo;
+#endif
+#if WINDOWS_TELEMETRY
 using OpenTelemetryExtension.Instrumentation.HardwareMonitor;
 #endif
 #if WINDOWS_TELEMETRY
-using OpenTelemetryExtension.Instrumentation.DiskInfo;
+using OpenTelemetryExtension.Instrumentation.PerformanceCounter;
 #endif
 using OpenTelemetryExtension.Instrumentation.SensorOmron;
-using OpenTelemetryExtension.Instrumentation.WFWattch2;
 #if WINDOWS_TELEMETRY
 using OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
 #endif
+using OpenTelemetryExtension.Instrumentation.WFWattch2;
 
 #pragma warning disable CA1819
 public sealed class TelemetrySetting
@@ -29,6 +32,10 @@ public sealed class TelemetrySetting
     public bool EnableDiskInfoMetrics { get; set; }
 #endif
 
+#if WINDOWS_TELEMETRY
+    public bool EnablePerformanceCounterMetrics { get; set; }
+#endif
+
     public bool EnableSensorOmronMetrics { get; set; }
 
     public bool EnableWFWattch2Metrics { get; set; }
@@ -40,19 +47,23 @@ public sealed class TelemetrySetting
     // Option
 
 #if WINDOWS_TELEMETRY
-    public HardwareMonitorOptions HardwareMonitor { get; set; } = default!;
+    public HardwareMonitorOptions HardwareMonitor { get; set; } = new();
 #endif
 
 #if WINDOWS_TELEMETRY
-    public DiskInfoOptions DiskInfo { get; set; } = default!;
+    public DiskInfoOptions DiskInfo { get; set; } = new();
 #endif
 
-    public SensorOmronOptions SensorOmron { get; set; } = default!;
+#if WINDOWS_TELEMETRY
+    public PerformanceCounterOptions PerformanceCounter { get; set; } = new();
+#endif
 
-    public WFWattch2Options WFWattch2 { get; set; } = default!;
+    public SensorOmronOptions SensorOmron { get; set; } = new();
+
+    public WFWattch2Options WFWattch2 { get; set; } = new();
 
 #if WINDOWS_TELEMETRY
-    public SwitchBotOptions SwitchBot { get; set; } = default!;
+    public SwitchBotOptions SwitchBot { get; set; } = new();
 #endif
 }
 #pragma warning restore CA1819

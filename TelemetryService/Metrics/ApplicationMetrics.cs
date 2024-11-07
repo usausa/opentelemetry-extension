@@ -19,7 +19,7 @@ internal sealed class ApplicationMetrics
     {
         log.InfoMetricsEnabled(nameof(ApplicationMetrics));
 
-        MeterInstance.CreateObservableCounter("application.uptime", ObserveApplicationUptime);
+        MeterInstance.CreateObservableCounter("telemetry.service.uptime", ObserveApplicationUptime);
     }
 
     private static long ObserveApplicationUptime() =>

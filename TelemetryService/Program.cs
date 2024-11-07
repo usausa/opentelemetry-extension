@@ -4,16 +4,19 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry;
 
 #if WINDOWS_TELEMETRY
+using OpenTelemetryExtension.Instrumentation.DiskInfo;
+#endif
+#if WINDOWS_TELEMETRY
 using OpenTelemetryExtension.Instrumentation.HardwareMonitor;
 #endif
 #if WINDOWS_TELEMETRY
-using OpenTelemetryExtension.Instrumentation.DiskInfo;
+using OpenTelemetryExtension.Instrumentation.PerformanceCounter;
 #endif
 using OpenTelemetryExtension.Instrumentation.SensorOmron;
-using OpenTelemetryExtension.Instrumentation.WFWattch2;
 #if WINDOWS_TELEMETRY
 using OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
 #endif
+using OpenTelemetryExtension.Instrumentation.WFWattch2;
 
 using Serilog;
 
@@ -60,6 +63,12 @@ builder.Services
         if (setting.EnableDiskInfoMetrics)
         {
             metrics.AddDiskInfoInstrumentation(setting.DiskInfo);
+        }
+#endif
+#if WINDOWS_TELEMETRY
+        if (setting.EnablePerformanceCounterMetrics)
+        {
+            metrics.AddPerformanceCounterInstrumentation(setting.PerformanceCounter);
         }
 #endif
         if (setting.EnableSensorOmronMetrics)

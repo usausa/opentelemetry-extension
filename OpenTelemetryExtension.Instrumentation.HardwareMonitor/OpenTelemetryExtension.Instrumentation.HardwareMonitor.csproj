@@ -9,7 +9,7 @@
     <PackageId>OpenTelemetryExtension.Instrumentation.HardwareMonitor</PackageId>
     <Title>OpenTelemetryExtension.Instrumentation.HardwareMonitor</Title>
     <Description>OpenTelemetry extension.</Description>
-    <PackageTags>opentelemetry metrics monitoring telemetry</PackageTags>
+    <PackageTags>opentelemetry metrics monitoring telemetry hardware</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

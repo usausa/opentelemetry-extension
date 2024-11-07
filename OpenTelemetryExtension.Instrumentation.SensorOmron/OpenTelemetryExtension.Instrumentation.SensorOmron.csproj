@@ -9,7 +9,7 @@
     <PackageId>OpenTelemetryExtension.Instrumentation.SensorOmron</PackageId>
     <Title>OpenTelemetryExtension.Instrumentation.SensorOmron</Title>
     <Description>OpenTelemetry extension.</Description>
-    <PackageTags>opentelemetry metrics monitoring telemetry</PackageTags>
+    <PackageTags>opentelemetry metrics monitoring telemetry sensor</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

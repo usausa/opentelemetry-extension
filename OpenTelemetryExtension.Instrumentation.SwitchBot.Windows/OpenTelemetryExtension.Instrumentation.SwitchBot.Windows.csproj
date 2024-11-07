@@ -9,7 +9,7 @@
     <PackageId>OpenTelemetryExtension.Instrumentation.SwitchBot.Windows</PackageId>
     <Title>OpenTelemetryExtension.Instrumentation.SwitchBot.Windows</Title>
     <Description>OpenTelemetry extension.</Description>
-    <PackageTags>opentelemetry metrics monitoring telemetry</PackageTags>
+    <PackageTags>opentelemetry metrics monitoring telemetry switchbot</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

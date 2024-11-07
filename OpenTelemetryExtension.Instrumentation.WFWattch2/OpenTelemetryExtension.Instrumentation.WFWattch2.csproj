@@ -9,7 +9,7 @@
     <PackageId>OpenTelemetryExtension.Instrumentation.WFWattch2</PackageId>
     <Title>OpenTelemetryExtension.Instrumentation.WFWattch2</Title>
     <Description>OpenTelemetry extension.</Description>
-    <PackageTags>opentelemetry metrics monitoring telemetry</PackageTags>
+    <PackageTags>opentelemetry metrics monitoring telemetry wfwattch2</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
