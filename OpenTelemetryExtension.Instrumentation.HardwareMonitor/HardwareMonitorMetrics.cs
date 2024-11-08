@@ -107,11 +107,11 @@ internal sealed class HardwareMonitorMetrics : IDisposable
     // Shared
     //--------------------------------------------------------------------------------
 
-    private KeyValuePair<string, object?>[] MakeTags(int index, string name) =>
-        [new("host", host), new("name", name), new("index", index)];
+    private KeyValuePair<string, object?>[] MakeTags(ISensor sensor) =>
+        [new("host", host), new("index", sensor.Index), new("hardware", sensor.Hardware.Name), new("name", sensor.Name)];
 
-    private KeyValuePair<string, object?>[] MakeTags(int index, string name, string type) =>
-        [new("host", host), new("name", name), new("type", type), new("index", index)];
+    private KeyValuePair<string, object?>[] MakeTags(ISensor sensor, string type) =>
+        [new("host", host), new("index", sensor.Index), new("hardware", sensor.Hardware.Name), new("name", sensor.Name), new("type", type)];
 
     private Measurement<double>[] MeasureSensor(ISensor[] sensors)
     {
@@ -122,7 +122,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
             for (var i = 0; i < sensors.Length; i++)
             {
                 var sensor = sensors[i];
-                values[i] = new Measurement<double>(ToValue(sensor), MakeTags(sensor.Index, sensor.Name));
+                values[i] = new Measurement<double>(ToValue(sensor), MakeTags(sensor));
             }
 
             return values;
@@ -214,7 +214,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
     {
         lock (computer)
         {
-            return new Measurement<double>(ToValue(sensor), MakeTags(sensor.Index, sensor.Hardware.Name));
+            return new Measurement<double>(ToValue(sensor), MakeTags(sensor));
         }
     }
 
@@ -224,9 +224,9 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         {
             return
             [
-                new Measurement<double>(ToValue(designed), MakeTags(designed.Index, designed.Hardware.Name, "designed")),
-                new Measurement<double>(ToValue(fullCharged), MakeTags(fullCharged.Index, fullCharged.Hardware.Name, "full")),
-                new Measurement<double>(ToValue(remaining), MakeTags(remaining.Index, remaining.Hardware.Name, "remaining"))
+                new Measurement<double>(ToValue(designed), MakeTags(designed, "designed")),
+                new Measurement<double>(ToValue(fullCharged), MakeTags(fullCharged, "full")),
+                new Measurement<double>(ToValue(remaining), MakeTags(remaining, "remaining"))
             ];
         }
     }
@@ -402,9 +402,9 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         {
             return
             [
-                new Measurement<double>(ToValue(freeMemory), MakeTags(freeMemory.Index, freeMemory.Hardware.Name, "free")),
-                new Measurement<double>(ToValue(usedMemory), MakeTags(usedMemory.Index, usedMemory.Hardware.Name, "used")),
-                new Measurement<double>(ToValue(totalMemory), MakeTags(totalMemory.Index, totalMemory.Hardware.Name, "total"))
+                new Measurement<double>(ToValue(freeMemory), MakeTags(freeMemory, "free")),
+                new Measurement<double>(ToValue(usedMemory), MakeTags(usedMemory, "used")),
+                new Measurement<double>(ToValue(totalMemory), MakeTags(totalMemory, "total"))
             ];
         }
     }
@@ -415,8 +415,8 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         {
             return
             [
-                new Measurement<double>(ToValue(rxThroughput), MakeTags(rxThroughput.Index, rxThroughput.Hardware.Name, "rx")),
-                new Measurement<double>(ToValue(txThroughput), MakeTags(txThroughput.Index, txThroughput.Hardware.Name, "tx"))
+                new Measurement<double>(ToValue(rxThroughput), MakeTags(rxThroughput, "rx")),
+                new Measurement<double>(ToValue(txThroughput), MakeTags(txThroughput, "tx"))
             ];
         }
     }
@@ -518,8 +518,8 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         {
             return
             [
-                new Measurement<double>(ToValue(physicalMemory), MakeTags(physicalMemory.Index, physicalMemory.Hardware.Name, "physical")),
-                new Measurement<double>(ToValue(virtualMemory), MakeTags(virtualMemory.Index, virtualMemory.Hardware.Name, "virtual"))
+                new Measurement<double>(ToValue(physicalMemory), MakeTags(physicalMemory, "physical")),
+                new Measurement<double>(ToValue(virtualMemory), MakeTags(virtualMemory, "virtual"))
             ];
         }
     }
@@ -620,7 +620,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
             for (var i = 0; i < sensors.Length; i++)
             {
                 var sensor = sensors[i];
-                values[i] = new Measurement<double>(ToValue(sensor), MakeTags(sensor.Index, sensor.Hardware.Name));
+                values[i] = new Measurement<double>(ToValue(sensor), MakeTags(sensor));
             }
 
             return values;
@@ -637,8 +637,8 @@ internal sealed class HardwareMonitorMetrics : IDisposable
             {
                 var readSensor = readSensors[i];
                 var writeSensor = writeSensors[i];
-                values[i * 2] = new Measurement<double>(ToValue(readSensor), MakeTags(readSensor.Index, readSensor.Hardware.Name, "read"));
-                values[(i * 2) + 1] = new Measurement<double>(ToValue(writeSensor), MakeTags(writeSensor.Index, writeSensor.Hardware.Name, "write"));
+                values[i * 2] = new Measurement<double>(ToValue(readSensor), MakeTags(readSensor, "read"));
+                values[(i * 2) + 1] = new Measurement<double>(ToValue(writeSensor), MakeTags(writeSensor, "write"));
             }
 
             return values;
@@ -656,11 +656,11 @@ internal sealed class HardwareMonitorMetrics : IDisposable
                 var sensor = sensors[i];
                 if (sensor.Name == "Percentage Used")
                 {
-                    values[i] = new Measurement<double>(100 - ToValue(sensor), MakeTags(sensor.Index, sensor.Hardware.Name));
+                    values[i] = new Measurement<double>(100 - ToValue(sensor), MakeTags(sensor));
                 }
                 else
                 {
-                    values[i] = new Measurement<double>(ToValue(sensor), MakeTags(sensor.Index, sensor.Hardware.Name));
+                    values[i] = new Measurement<double>(ToValue(sensor), MakeTags(sensor));
                 }
             }
 
@@ -719,7 +719,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
             for (var i = 0; i < sensors.Length; i++)
             {
                 var sensor = sensors[i];
-                values[i] = new Measurement<double>(ToValue(sensor), MakeTags(sensor.Index, sensor.Hardware.Name));
+                values[i] = new Measurement<double>(ToValue(sensor), MakeTags(sensor));
             }
 
             return values;
@@ -736,8 +736,8 @@ internal sealed class HardwareMonitorMetrics : IDisposable
             {
                 var downloadSensor = downloadSensors[i];
                 var uploadSensor = uploadSensors[i];
-                values[i * 2] = new Measurement<double>(ToValue(downloadSensor), MakeTags(downloadSensor.Index, downloadSensor.Hardware.Name, "download"));
-                values[(i * 2) + 1] = new Measurement<double>(ToValue(uploadSensor), MakeTags(uploadSensor.Index, uploadSensor.Hardware.Name, "upload"));
+                values[i * 2] = new Measurement<double>(ToValue(downloadSensor), MakeTags(downloadSensor, "download"));
+                values[(i * 2) + 1] = new Measurement<double>(ToValue(uploadSensor), MakeTags(uploadSensor, "upload"));
             }
 
             return values;
