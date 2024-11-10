@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HardwareInfo.Disk" Version="0.2.0" />
+    <PackageReference Include="HardwareInfo.Disk" Version="0.9.1" />
     <PackageReference Include="OpenTelemetry" Version="1.9.0" />
   </ItemGroup>
 

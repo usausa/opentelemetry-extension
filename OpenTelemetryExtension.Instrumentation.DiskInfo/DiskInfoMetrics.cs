@@ -1,6 +1,7 @@
 namespace OpenTelemetryExtension.Instrumentation.DiskInfo;
 
 using System.Diagnostics.Metrics;
+using System.Linq;
 using System.Reflection;
 
 using HardwareInfo.Disk;
@@ -16,7 +17,13 @@ internal sealed class DiskInfoMetrics : IDisposable
 
     private readonly string host;
 
-    private readonly IDiskInfo[] disks;
+    private readonly IReadOnlyList<IDiskInfo> disks;
+
+    private readonly DiskEntry<ISmartNvme>[] nvmeEntries;
+
+    private readonly DiskEntry<ISmartGeneric>[] genericEntries;
+
+    private readonly int genericHint;
 
     private readonly Timer timer;
 
@@ -30,45 +37,19 @@ internal sealed class DiskInfoMetrics : IDisposable
 
         disks = DiskInfo.GetInformation();
 
-        var nvme = disks.Count(static x => x.DiskType == DiskType.Nvme);
-        // ReSharper disable StringLiteralTypo
-        MeterInstance.CreateObservableUpDownCounter("smart.availablespare",
-            () => GatherMeasurementNvme(nvme, static x => x.AvailableSpare));
-        MeterInstance.CreateObservableUpDownCounter("smart.availablesparethreshold",
-            () => GatherMeasurementNvme(nvme, static x => x.AvailableSpareThreshold));
-        MeterInstance.CreateObservableUpDownCounter("smart.controllerbusytime",
-            () => GatherMeasurementNvme(nvme, static x => x.ControllerBusyTime));
-        MeterInstance.CreateObservableUpDownCounter("smart.criticalcompositetemperaturetime",
-            () => GatherMeasurementNvme(nvme, static x => x.CriticalCompositeTemperatureTime));
-        MeterInstance.CreateObservableUpDownCounter("smart.criticalwarning",
-            () => GatherMeasurementNvme(nvme, static x => x.CriticalWarning));
-        MeterInstance.CreateObservableUpDownCounter("smart.dataread",
-            () => GatherMeasurementNvme(nvme, static x => x.DataUnitRead * 512 * 1000));
-        MeterInstance.CreateObservableUpDownCounter("smart.datawritten",
-            () => GatherMeasurementNvme(nvme, static x => x.DataUnitWritten * 512 * 1000));
-        MeterInstance.CreateObservableUpDownCounter("smart.errorinfologentrycount",
-            () => GatherMeasurementNvme(nvme, static x => x.ErrorInfoLogEntryCount));
-        MeterInstance.CreateObservableUpDownCounter("smart.hostreadcommands",
-            () => GatherMeasurementNvme(nvme, static x => x.HostReadCommands));
-        MeterInstance.CreateObservableUpDownCounter("smart.hostwritecommands",
-            () => GatherMeasurementNvme(nvme, static x => x.HostWriteCommands));
-        MeterInstance.CreateObservableUpDownCounter("smart.mediaerrors",
-            () => GatherMeasurementNvme(nvme, static x => x.MediaErrors));
-        MeterInstance.CreateObservableUpDownCounter("smart.percentageused",
-            () => GatherMeasurementNvme(nvme, static x => x.PercentageUsed));
-        MeterInstance.CreateObservableUpDownCounter("smart.powercycle",
-            () => GatherMeasurementNvme(nvme, static x => x.PowerCycle));
-        MeterInstance.CreateObservableUpDownCounter("smart.poweronhours",
-            () => GatherMeasurementNvme(nvme, static x => x.PowerOnHours));
-        MeterInstance.CreateObservableUpDownCounter("smart.temperature",
-            () => GatherMeasurementNvme(nvme, static x => x.Temperature));
-        MeterInstance.CreateObservableUpDownCounter("smart.unsafeshutdowns",
-            () => GatherMeasurementNvme(nvme, static x => x.UnsafeShutdowns));
-        MeterInstance.CreateObservableUpDownCounter("smart.warningcompositetemperaturetime",
-            () => GatherMeasurementNvme(nvme, static x => x.WarningCompositeTemperatureTime));
-        // ReSharper restore StringLiteralTypo
+        nvmeEntries = disks
+            .Where(static x => x.SmartType == SmartType.Nvme)
+            .Select(static x => new DiskEntry<ISmartNvme>(x, (ISmartNvme)x.Smart, MakeDriveValue(x)))
+            .ToArray();
+        genericEntries = disks
+            .Where(static x => x.SmartType == SmartType.Generic)
+            .Select(static x => new DiskEntry<ISmartGeneric>(x, (ISmartGeneric)x.Smart, MakeDriveValue(x)))
+            .ToArray();
+        genericHint = genericEntries.Sum(static x => x.Smart.GetSupportedIds().Count);
 
-        // TODO
+        MeterInstance.CreateObservableUpDownCounter("smart.disk.byte_per_sector", GatherMeasurementDisk);
+        MeterInstance.CreateObservableUpDownCounter("smart.nvme.value", GatherMeasurementNvme);
+        MeterInstance.CreateObservableUpDownCounter("smart.generic.value", GatherMeasurementGeneric);
 
         timer = new Timer(Update, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(options.Interval));
     }
@@ -98,34 +79,120 @@ internal sealed class DiskInfoMetrics : IDisposable
     // Shared
     //--------------------------------------------------------------------------------
 
-    private KeyValuePair<string, object?>[] MakeTags(int index, string name) =>
-        [new("host", host), new("name", name), new("index", index)];
+    private static string MakeDriveValue(IDiskInfo disk) =>
+        String.Concat(disk.GetDrives().Select(static x => x.Name.TrimEnd(':')));
+
+    private KeyValuePair<string, object?>[] MakeTags(uint index, string name, string drive) =>
+        [new("host", host), new("index", index), new("name", name), new("drive", drive)];
+
+    private KeyValuePair<string, object?>[] MakeTags(uint index, string name, string drive, string id) =>
+        [new("host", host), new("index", index), new("name", name), new("drive", drive), new("smart_id", id)];
+
+    private Measurement<double> MakeMeasurement<T>(DiskEntry<T> entry, string id, double value) =>
+        new(value, MakeTags(entry.Disk.Index, entry.Disk.Model, entry.Drive, id));
 
     //--------------------------------------------------------------------------------
-    // NVMe
+    // Measure
     //--------------------------------------------------------------------------------
 
-    private List<Measurement<double>> GatherMeasurementNvme(int hint, Func<ISmartNvme, double?> selector)
+    private List<Measurement<double>> GatherMeasurementDisk()
     {
         lock (disks)
         {
-            var values = new List<Measurement<double>>(hint);
+            var values = new List<Measurement<double>>(nvmeEntries.Length + genericEntries.Length);
 
-            // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var disk in disks)
+            // ReSharper disable LoopCanBeConvertedToQuery
+            foreach (var entry in nvmeEntries)
             {
-                if ((disk.Smart is ISmartNvme smart) && smart.LastUpdate)
-                {
-                    var value = selector(smart);
-                    if (value.HasValue)
-                    {
-                        values.Add(new Measurement<double>(value.Value, MakeTags(disk.Index, disk.Model)));
-                    }
-                }
-                // TODO
+                values.Add(new Measurement<double>(entry.Disk.BytesPerSector, MakeTags(entry.Disk.Index, entry.Disk.Model, entry.Drive)));
             }
+
+            foreach (var entry in genericEntries)
+            {
+                values.Add(new Measurement<double>(entry.Disk.BytesPerSector, MakeTags(entry.Disk.Index, entry.Disk.Model, entry.Drive)));
+            }
+            // ReSharper restore LoopCanBeConvertedToQuery
 
             return values;
         }
     }
+
+    private List<Measurement<double>> GatherMeasurementNvme()
+    {
+        lock (disks)
+        {
+            var values = new List<Measurement<double>>(nvmeEntries.Length * 25);
+
+            // ReSharper disable LoopCanBeConvertedToQuery
+            foreach (var entry in nvmeEntries)
+            {
+                var smart = entry.Smart;
+                if (smart.LastUpdate)
+                {
+                    values.Add(MakeMeasurement(entry, "available_spare", smart.AvailableSpare));
+                    values.Add(MakeMeasurement(entry, "available_spare_threshold", smart.AvailableSpareThreshold));
+                    values.Add(MakeMeasurement(entry, "controller_busy_time", smart.ControllerBusyTime));
+                    values.Add(MakeMeasurement(entry, "critical_composite_temperature_time", smart.CriticalCompositeTemperatureTime));
+                    values.Add(MakeMeasurement(entry, "critical_warning", smart.CriticalWarning));
+                    values.Add(MakeMeasurement(entry, "data_unit_read", smart.DataUnitRead));
+                    values.Add(MakeMeasurement(entry, "data_unit_written", smart.DataUnitWritten));
+                    values.Add(MakeMeasurement(entry, "error_info_log_entries", smart.ErrorInfoLogEntries));
+                    values.Add(MakeMeasurement(entry, "host_read_commands", smart.HostReadCommands));
+                    values.Add(MakeMeasurement(entry, "host_write_commands", smart.HostWriteCommands));
+                    values.Add(MakeMeasurement(entry, "media_errors", smart.MediaErrors));
+                    values.Add(MakeMeasurement(entry, "percentage_used", smart.PercentageUsed));
+                    values.Add(MakeMeasurement(entry, "power_cycles", smart.PowerCycles));
+                    values.Add(MakeMeasurement(entry, "power_on_hours", smart.PowerOnHours));
+                    values.Add(MakeMeasurement(entry, "temperature", smart.Temperature));
+                    values.Add(MakeMeasurement(entry, "unsafe_shutdowns", smart.UnsafeShutdowns));
+                    values.Add(MakeMeasurement(entry, "warning_composite_temperature_time", smart.WarningCompositeTemperatureTime));
+                    for (var i = 0; i < smart.TemperatureSensors.Length; i++)
+                    {
+                        var value = smart.TemperatureSensors[i];
+                        if (value > 0)
+                        {
+                            values.Add(MakeMeasurement(entry, $"temperature_sensor{i}", value));
+                        }
+                    }
+                }
+            }
+            // ReSharper restore LoopCanBeConvertedToQuery
+
+            return values;
+        }
+    }
+
+    private List<Measurement<double>> GatherMeasurementGeneric()
+    {
+        lock (disks)
+        {
+            var values = new List<Measurement<double>>(genericHint);
+
+            // ReSharper disable LoopCanBeConvertedToQuery
+            foreach (var entry in genericEntries)
+            {
+                var smart = entry.Smart;
+                if (smart.LastUpdate)
+                {
+                    foreach (var id in smart.GetSupportedIds())
+                    {
+                        var attr = smart.GetAttribute(id);
+                        if (attr.HasValue)
+                        {
+                            values.Add(MakeMeasurement(entry, $"{(byte)id:X2}", attr.Value.RawValue));
+                        }
+                    }
+                }
+            }
+            // ReSharper restore LoopCanBeConvertedToQuery
+
+            return values;
+        }
+    }
+
+    //--------------------------------------------------------------------------------
+    // Device
+    //--------------------------------------------------------------------------------
+
+    private sealed record DiskEntry<T>(IDiskInfo Disk, T Smart, string Drive);
 }
