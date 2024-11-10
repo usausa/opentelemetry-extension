@@ -82,11 +82,11 @@ internal sealed class DiskInfoMetrics : IDisposable
     private static string MakeDriveValue(IDiskInfo disk) =>
         String.Concat(disk.GetDrives().Select(static x => x.Name.TrimEnd(':')));
 
-    private KeyValuePair<string, object?>[] MakeTags(uint index, string name, string drive) =>
-        [new("host", host), new("index", index), new("name", name), new("drive", drive)];
+    private KeyValuePair<string, object?>[] MakeTags(uint index, string model, string drive) =>
+        [new("host", host), new("index", index), new("model", model), new("drive", drive)];
 
-    private KeyValuePair<string, object?>[] MakeTags(uint index, string name, string drive, string id) =>
-        [new("host", host), new("index", index), new("name", name), new("drive", drive), new("smart_id", id)];
+    private KeyValuePair<string, object?>[] MakeTags(uint index, string model, string drive, string id) =>
+        [new("host", host), new("index", index), new("model", model), new("drive", drive), new("smart_id", id)];
 
     private Measurement<double> MakeMeasurement<T>(DiskEntry<T> entry, string id, double value) =>
         new(value, MakeTags(entry.Disk.Index, entry.Disk.Model, entry.Drive, id));
