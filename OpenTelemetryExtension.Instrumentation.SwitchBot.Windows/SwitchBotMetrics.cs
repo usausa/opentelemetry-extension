@@ -96,11 +96,7 @@ internal sealed class SwitchBotMetrics : IDisposable
                 var value = selector(device);
                 if (value.HasValue)
                 {
-                    values.Add(new Measurement<double>(
-                        value.Value,
-                        new("model", "switchbot"),
-                        new("address", device.Setting.Address),
-                        new("name", device.Setting.Name)));
+                    values.Add(new Measurement<double>(value.Value, new("model", "switchbot"), new("address", device.Setting.Address), new("name", device.Setting.Name)));
                 }
             }
         }

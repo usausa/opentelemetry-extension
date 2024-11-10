@@ -1,5 +1,6 @@
 namespace OpenTelemetryExtension.Instrumentation.PerformanceCounter;
 
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Reflection;
 
@@ -10,13 +11,11 @@ internal sealed class PerformanceCounterMetrics : IDisposable
     internal static readonly AssemblyName AssemblyName = typeof(PerformanceCounterMetrics).Assembly.GetName();
     internal static readonly string MeterName = AssemblyName.Name!.Replace(".Instrumentation", string.Empty, StringComparison.Ordinal);
 
-#pragma warning disable CA1823
-    // ReSharper disable once UnusedMember.Local
     private static readonly Meter MeterInstance = new(MeterName, AssemblyName.Version!.ToString());
 
-    // ReSharper disable once NotAccessedField.Local
     private readonly string host;
-#pragma warning restore CA1823
+
+    private readonly List<PerformanceCounter> disposables = new();
 
     public PerformanceCounterMetrics(
         ILogger<PerformanceCounterMetrics> log,
@@ -26,13 +25,78 @@ internal sealed class PerformanceCounterMetrics : IDisposable
 
         host = options.Host ?? Environment.MachineName;
 
-        // TODO
+        foreach (var entry in options.Counter)
+        {
+            var counters = CreateCounters(entry.Category, entry.Counter, entry.Instance).ToArray();
+            foreach (var counter in counters)
+            {
+                counter.NextValue();
+            }
+
+            MeterInstance.CreateObservableUpDownCounter($"{options.Prefix}.{entry.Name}", () => ToMeasurement(counters));
+
+            disposables.AddRange(counters);
+        }
     }
 
     public void Dispose()
     {
-        // TODO
+        foreach (var counter in disposables)
+        {
+            counter.Dispose();
+        }
     }
 
-    // TODO
+    //--------------------------------------------------------------------------------
+    // Helper
+    //--------------------------------------------------------------------------------
+
+    private static IEnumerable<PerformanceCounter> CreateCounters(string category, string counter, string? instance = null)
+    {
+        if (!String.IsNullOrEmpty(instance))
+        {
+            yield return new PerformanceCounter(category, counter, instance);
+        }
+        else
+        {
+            var pcc = new PerformanceCounterCategory(category);
+            if (pcc.CategoryType == PerformanceCounterCategoryType.SingleInstance)
+            {
+                yield return new PerformanceCounter(category, counter);
+            }
+            else
+            {
+                var names = pcc.GetInstanceNames();
+                Array.Sort(names);
+                foreach (var name in names)
+                {
+                    yield return new PerformanceCounter(category, counter, name);
+                }
+            }
+        }
+    }
+
+    //--------------------------------------------------------------------------------
+    // Measure
+    //--------------------------------------------------------------------------------
+
+    private Measurement<double>[] ToMeasurement(PerformanceCounter[] counters)
+    {
+        var measurements = new Measurement<double>[counters.Length];
+
+        for (var i = 0; i < counters.Length; i++)
+        {
+            var counter = counters[i];
+            if (String.IsNullOrEmpty(counter.InstanceName))
+            {
+                measurements[i] = new Measurement<double>(counter.NextValue(), new KeyValuePair<string, object?>("host", host));
+            }
+            else
+            {
+                measurements[i] = new Measurement<double>(counter.NextValue(), new("host", host), new("name", counter.InstanceName));
+            }
+        }
+
+        return measurements;
+    }
 }
