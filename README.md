@@ -130,6 +130,38 @@ hardware_network_speed
 hardware_network_load
 ```
 
+# S.M.A.R.T
+
+[![NuGet](https://img.shields.io/nuget/v/OpenTelemetryExtension.Instrumentation.DiskInfo)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.DiskInfo/)
+
+|OS|Support|
+|:----|:----|
+|Windows|✅|
+|Linux||
+
+## Metrics
+
+```
+smart_disk_byte_per_sector
+smart_nvme_value
+smart_generic_value
+```
+
+# Performance Counter
+
+[![NuGet](https://img.shields.io/nuget/v/OpenTelemetryExtension.Instrumentation.PerformanceCounter)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.PerformanceCounter/)
+
+|OS|Support|
+|:----|:----|
+|Windows|✅|
+|Linux||
+
+## Metrics
+
+```
+performance_* (default)
+```
+
 # Install
 
 ## Windows
