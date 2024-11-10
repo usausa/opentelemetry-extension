@@ -15,7 +15,7 @@ internal sealed class PerformanceCounterMetrics : IDisposable
 
     private readonly string host;
 
-    private readonly List<PerformanceCounter> disposables = new();
+    private readonly List<PerformanceCounter> disposables = [];
 
     public PerformanceCounterMetrics(
         ILogger<PerformanceCounterMetrics> log,
