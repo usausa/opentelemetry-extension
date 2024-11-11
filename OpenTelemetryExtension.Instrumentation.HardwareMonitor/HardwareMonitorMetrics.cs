@@ -29,7 +29,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
     {
         log.InfoMetricsEnabled(nameof(HardwareMonitorMetrics));
 
-        host = options.Host ?? Environment.MachineName;
+        host = options.Host;
 
         computer = new Computer
         {

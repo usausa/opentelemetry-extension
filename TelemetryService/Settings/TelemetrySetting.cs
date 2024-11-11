@@ -20,6 +20,8 @@ public sealed class TelemetrySetting
 {
     public string[] EndPoints { get; set; } = default!;
 
+    public string? Host { get; set; }
+
     // Enable
 
     public bool EnableApplicationMetrics { get; set; }

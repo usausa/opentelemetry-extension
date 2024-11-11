@@ -22,5 +22,5 @@ public sealed class HardwareMonitorOptions
 
     public bool IsStorageEnabled { get; set; } = true;
 
-    public string? Host { get; set; }
+    public string Host { get; set; } = default!;
 }

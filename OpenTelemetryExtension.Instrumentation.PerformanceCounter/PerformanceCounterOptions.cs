@@ -20,7 +20,7 @@ public sealed class PerformanceCounterOptions
 {
     public string Prefix { get; set; } = "performance";
 
-    public string? Host { get; set; }
+    public string Host { get; set; } = default!;
 
     public CounterEntry[] Counter { get; set; } = default!;
 }

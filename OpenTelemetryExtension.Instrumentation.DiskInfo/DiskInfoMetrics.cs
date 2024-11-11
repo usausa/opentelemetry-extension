@@ -33,7 +33,7 @@ internal sealed class DiskInfoMetrics : IDisposable
     {
         log.InfoMetricsEnabled(nameof(DiskInfoMetrics));
 
-        host = options.Host ?? Environment.MachineName;
+        host = options.Host;
 
         disks = DiskInfo.GetInformation();
 

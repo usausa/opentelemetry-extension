@@ -49,6 +49,8 @@ builder.Services
     .AddOpenTelemetry()
     .WithMetrics(metrics =>
     {
+        var host = setting.Host ?? Environment.MachineName;
+
         if (setting.EnableApplicationMetrics)
         {
             metrics.AddApplicationInstrumentation();
@@ -56,18 +58,21 @@ builder.Services
 #if WINDOWS_TELEMETRY
         if (setting.EnableHardwareMetrics)
         {
+            setting.HardwareMonitor.Host = String.IsNullOrWhiteSpace(setting.HardwareMonitor.Host) ? host : setting.HardwareMonitor.Host;
             metrics.AddHardwareMonitorInstrumentation(setting.HardwareMonitor);
         }
 #endif
 #if WINDOWS_TELEMETRY
         if (setting.EnableDiskInfoMetrics)
         {
+            setting.DiskInfo.Host = String.IsNullOrWhiteSpace(setting.DiskInfo.Host) ? host : setting.DiskInfo.Host;
             metrics.AddDiskInfoInstrumentation(setting.DiskInfo);
         }
 #endif
 #if WINDOWS_TELEMETRY
         if (setting.EnablePerformanceCounterMetrics)
         {
+            setting.PerformanceCounter.Host = String.IsNullOrWhiteSpace(setting.PerformanceCounter.Host) ? host : setting.PerformanceCounter.Host;
             metrics.AddPerformanceCounterInstrumentation(setting.PerformanceCounter);
         }
 #endif

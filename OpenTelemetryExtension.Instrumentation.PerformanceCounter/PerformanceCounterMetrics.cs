@@ -23,7 +23,7 @@ internal sealed class PerformanceCounterMetrics : IDisposable
     {
         log.InfoMetricsEnabled(nameof(PerformanceCounterMetrics));
 
-        host = options.Host ?? Environment.MachineName;
+        host = options.Host;
 
         foreach (var entry in options.Counter)
         {
