@@ -49,7 +49,9 @@ builder.Services
     .AddOpenTelemetry()
     .WithMetrics(metrics =>
     {
+#if WINDOWS_TELEMETRY
         var host = setting.Host ?? Environment.MachineName;
+#endif
 
         if (setting.EnableApplicationMetrics)
         {
