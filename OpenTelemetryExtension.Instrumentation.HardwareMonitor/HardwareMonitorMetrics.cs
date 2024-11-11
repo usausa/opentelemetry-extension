@@ -238,7 +238,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
     private void SetupCpuMeasurement()
     {
         var loadSensors = EnumerableSensors(HardwareType.Cpu, SensorType.Load)
-            .Where(static x => x.Name.StartsWith("CPU Core #", StringComparison.Ordinal))
+            .Where(static x => x.Name.StartsWith("CPU Core #", StringComparison.Ordinal) || x.Name == "CPU Total")
             .ToArray();
         var clockSensors = EnumerableSensors(HardwareType.Cpu, SensorType.Clock)
             .Where(static x => !x.Name.Contains("Effective", StringComparison.Ordinal))
