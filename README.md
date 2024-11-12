@@ -2,7 +2,8 @@
 
 - Multiple metrics monitoring service
 
-![Grafana](https://github.com/usausa/opentelemetry-extension/blob/main/Document/telemetry.png)
+![Summary](https://github.com/usausa/opentelemetry-extension/blob/main/Document/summary.png)
+![Power](https://github.com/usausa/opentelemetry-extension/blob/main/Document/power.png)
 
 # RS-WFWATTCH2
 
@@ -62,7 +63,7 @@ sensor_power
 
 for [2JCIE-BU](https://www.fa.omron.co.jp/products/family/3724/lineup.html)
 
-![Grafana](https://github.com/usausa/opentelemetry-extension/blob/main/Document/sensor.png)
+![Environment](https://github.com/usausa/opentelemetry-extension/blob/main/Document/environment.png)
 
 ## Metrics
 
@@ -138,6 +139,8 @@ hardware_network_load
 |:----|:----|
 |Windows|✅|
 |Linux||
+
+![Environment](https://github.com/usausa/opentelemetry-extension/blob/main/Document/smart.png)
 
 ## Metrics
 
