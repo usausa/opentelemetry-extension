@@ -8,7 +8,7 @@ using OpenTelemetry.Metrics;
 public static class MeterProviderBuilderExtensions
 {
     public static MeterProviderBuilder AddPerformanceCounterInstrumentation(this MeterProviderBuilder builder) =>
-        AddPerformanceCounterInstrumentation(builder, _ => { });
+        AddPerformanceCounterInstrumentation(builder, static _ => { });
 
     public static MeterProviderBuilder AddPerformanceCounterInstrumentation(this MeterProviderBuilder builder, Action<PerformanceCounterOptions> configure)
     {

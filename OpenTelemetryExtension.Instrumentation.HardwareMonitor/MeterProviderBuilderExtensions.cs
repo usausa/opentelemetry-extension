@@ -8,7 +8,7 @@ using OpenTelemetry.Metrics;
 public static class MeterProviderBuilderExtensions
 {
     public static MeterProviderBuilder AddHardwareMonitorInstrumentation(this MeterProviderBuilder builder) =>
-        AddHardwareMonitorInstrumentation(builder, _ => { });
+        AddHardwareMonitorInstrumentation(builder, static _ => { });
 
     public static MeterProviderBuilder AddHardwareMonitorInstrumentation(this MeterProviderBuilder builder, Action<HardwareMonitorOptions> configure)
     {

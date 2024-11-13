@@ -8,7 +8,7 @@ using OpenTelemetry.Metrics;
 public static class MeterProviderBuilderExtensions
 {
     public static MeterProviderBuilder AddDiskInfoInstrumentation(this MeterProviderBuilder builder) =>
-        AddDiskInfoInstrumentation(builder, _ => { });
+        AddDiskInfoInstrumentation(builder, static _ => { });
 
     public static MeterProviderBuilder AddDiskInfoInstrumentation(this MeterProviderBuilder builder, Action<DiskInfoOptions> configure)
     {
