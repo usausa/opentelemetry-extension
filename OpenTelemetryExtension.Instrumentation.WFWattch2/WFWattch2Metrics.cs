@@ -1,3 +1,4 @@
+#pragma warning disable IDE0032
 namespace OpenTelemetryExtension.Instrumentation.WFWattch2;
 
 using System;
@@ -81,7 +82,11 @@ internal sealed class WFWattch2Metrics : IDisposable
     {
         private readonly SemaphoreSlim semaphore = new(1, 1);
 
+#if NET9_0_OR_GREATER
+        private readonly Lock sync = new();
+#else
         private readonly object sync = new();
+#endif
 
         private readonly WattchClient client;
 

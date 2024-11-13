@@ -2,7 +2,7 @@ namespace TelemetryService.Metrics;
 
 using OpenTelemetry.Metrics;
 
-public static class MeterProviderBuilderExtensions
+internal static class MeterProviderBuilderExtensions
 {
     public static MeterProviderBuilder AddApplicationInstrumentation(this MeterProviderBuilder builder)
     {

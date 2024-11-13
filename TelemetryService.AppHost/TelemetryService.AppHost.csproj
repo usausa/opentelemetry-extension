@@ -1,15 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0" />
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net8.0;net8.0-windows10.0.22000.0</TargetFrameworks>
+    <TargetFrameworks>net9.0;net9.0-windows10.0.22000.0</TargetFrameworks>
     <CodeAnalysisRuleSet>..\Analyzers.ruleset</CodeAnalysisRuleSet>
     <IsAspireHost>true</IsAspireHost>
     <UserSecretsId>bba23599-a53d-4128-9da7-3cc03b94dd54</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="8.2.2" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
