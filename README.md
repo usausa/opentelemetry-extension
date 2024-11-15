@@ -2,6 +2,7 @@
 
 - Multiple metrics monitoring service
 
+![Windows](https://github.com/usausa/opentelemetry-extension/blob/main/Document/windows.png)
 ![Summary](https://github.com/usausa/opentelemetry-extension/blob/main/Document/summary.png)
 ![Power](https://github.com/usausa/opentelemetry-extension/blob/main/Document/power.png)
 
