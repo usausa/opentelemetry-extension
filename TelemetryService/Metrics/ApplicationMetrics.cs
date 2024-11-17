@@ -7,21 +7,36 @@ using System.Reflection;
 
 internal sealed class ApplicationMetrics
 {
-    public const string InstrumentName = "Application";
-
     internal static readonly AssemblyName AssemblyName = typeof(ApplicationMetrics).Assembly.GetName();
     internal static readonly string MeterName = AssemblyName.Name!;
 
     private static readonly Meter MeterInstance = new(MeterName, AssemblyName.Version!.ToString());
 
+    private readonly ApplicationOptions options;
+
     public ApplicationMetrics(
-        ILogger<ApplicationMetrics> log)
+        ILogger<ApplicationMetrics> log,
+        ApplicationOptions options)
     {
         log.InfoMetricsEnabled(nameof(ApplicationMetrics));
 
-        MeterInstance.CreateObservableCounter("telemetry.service.uptime", ObserveApplicationUptime);
+        this.options = options;
+
+        MeterInstance.CreateObservableUpDownCounter("telemetry.service.uptime", MeasureUptime);
+        MeterInstance.CreateObservableUpDownCounter("telemetry.service.instrumentation", MeasureInstrumentation);
     }
 
-    private static long ObserveApplicationUptime() =>
+    private static long MeasureUptime() =>
         (long)(DateTime.Now - Process.GetCurrentProcess().StartTime).TotalSeconds;
+
+    private Measurement<double>[] MeasureInstrumentation()
+    {
+        var values = new Measurement<double>[options.InstrumentationList.Length];
+        for (var i = 0; i < options.InstrumentationList.Length; i++)
+        {
+            values[i] = new Measurement<double>(1, new("host", options.Host), new("name", options.InstrumentationList[i]));
+        }
+
+        return values;
+    }
 }

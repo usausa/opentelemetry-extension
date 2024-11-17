@@ -49,19 +49,15 @@ builder.Services
     .AddOpenTelemetry()
     .WithMetrics(metrics =>
     {
-#if WINDOWS_TELEMETRY
         var host = setting.Host ?? Environment.MachineName;
-#endif
+        var instrumentationList = new List<string>();
 
-        if (setting.EnableApplicationMetrics)
-        {
-            metrics.AddApplicationInstrumentation();
-        }
 #if WINDOWS_TELEMETRY
         if (setting.EnableHardwareMetrics)
         {
             setting.HardwareMonitor.Host = String.IsNullOrWhiteSpace(setting.HardwareMonitor.Host) ? host : setting.HardwareMonitor.Host;
             metrics.AddHardwareMonitorInstrumentation(setting.HardwareMonitor);
+            instrumentationList.Add(nameof(setting.HardwareMonitor));
         }
 #endif
 #if WINDOWS_TELEMETRY
@@ -69,6 +65,7 @@ builder.Services
         {
             setting.DiskInfo.Host = String.IsNullOrWhiteSpace(setting.DiskInfo.Host) ? host : setting.DiskInfo.Host;
             metrics.AddDiskInfoInstrumentation(setting.DiskInfo);
+            instrumentationList.Add(nameof(setting.DiskInfo));
         }
 #endif
 #if WINDOWS_TELEMETRY
@@ -76,22 +73,35 @@ builder.Services
         {
             setting.PerformanceCounter.Host = String.IsNullOrWhiteSpace(setting.PerformanceCounter.Host) ? host : setting.PerformanceCounter.Host;
             metrics.AddPerformanceCounterInstrumentation(setting.PerformanceCounter);
+            instrumentationList.Add(nameof(setting.PerformanceCounter));
         }
 #endif
         if (setting.EnableSensorOmronMetrics)
         {
             metrics.AddSensorOmronInstrumentation(setting.SensorOmron);
+            instrumentationList.Add(nameof(setting.SensorOmron));
         }
         if (setting.EnableWFWattch2Metrics)
         {
             metrics.AddWFWattch2Instrumentation(setting.WFWattch2);
+            instrumentationList.Add(nameof(setting.WFWattch2));
         }
 #if WINDOWS_TELEMETRY
         if (setting.EnableSwitchBotMetrics)
         {
             metrics.AddSwitchBotInstrumentation(setting.SwitchBot);
+            instrumentationList.Add(nameof(setting.SwitchBot));
         }
 #endif
+
+        if (setting.EnableApplicationMetrics)
+        {
+            metrics.AddApplicationInstrumentation(new ApplicationOptions
+            {
+                Host = host,
+                InstrumentationList = [..instrumentationList]
+            });
+        }
 
         metrics.AddPrometheusHttpListener(options =>
         {
