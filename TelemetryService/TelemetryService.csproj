@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
-    <TargetFrameworks>net9.0;net9.0-windows10.0.22000.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net8.0-windows10.0.22000.0</TargetFrameworks>
     <CodeAnalysisRuleSet>..\Analyzers.ruleset</CodeAnalysisRuleSet>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <UserSecretsId>f57949ea-2511-4851-8b81-5c2bc5ae8a75</UserSecretsId>
