@@ -1,5 +1,6 @@
 namespace OpenTelemetryExtension.Instrumentation.HardwareMonitor;
 
+using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -45,11 +46,12 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         computer.Open();
         computer.Accept(updateVisitor);
 
-        SetupBatteryMeasurement();
+        SetupInformationMeasurement();
         SetupCpuMeasurement();
         SetupGpuMeasurement();
-        SetupIoMeasurement();
         SetupMemoryMeasurement();
+        SetupIoMeasurement();
+        SetupBatteryMeasurement();
         SetupStorageMeasurement();
         SetupNetworkMeasurement();
 
@@ -70,25 +72,44 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         }
     }
 
-    private IEnumerable<ISensor> EnumerableSensors(HardwareType hardwareType, SensorType sensorType) =>
+    private IEnumerable<IHardware> EnumerateHardware(HardwareType type) =>
+        computer.Hardware.SelectMany(EnumerateHardware).Where(x => x.HardwareType == type);
+
+    private IEnumerable<IHardware> EnumerateHardware(params HardwareType[] types) =>
+        computer.Hardware.SelectMany(EnumerateHardware).Where(x => Array.IndexOf(types, x) >= 0);
+
+    private static IEnumerable<IHardware> EnumerateHardware(IHardware hardware)
+    {
+        yield return hardware;
+
+        foreach (var subHardware in hardware.SubHardware)
+        {
+            foreach (var subSubHardware in EnumerateHardware(subHardware))
+            {
+                yield return subSubHardware;
+            }
+        }
+    }
+
+    private IEnumerable<ISensor> EnumerateSensors(HardwareType hardwareType, SensorType sensorType) =>
         computer.Hardware
-            .SelectMany(EnumerableSensors)
+            .SelectMany(EnumerateSensors)
             .Where(x => (x.Hardware.HardwareType == hardwareType) &&
                         (x.SensorType == sensorType));
 
-    private IEnumerable<ISensor> EnumerableGpuSensors(SensorType sensorType) =>
+    private IEnumerable<ISensor> EnumerateGpuSensors(SensorType sensorType) =>
         computer.Hardware
-            .SelectMany(EnumerableSensors)
+            .SelectMany(EnumerateSensors)
             .Where(x => ((x.Hardware.HardwareType == HardwareType.GpuNvidia) ||
                          (x.Hardware.HardwareType == HardwareType.GpuAmd) ||
                          (x.Hardware.HardwareType == HardwareType.GpuIntel)) &&
                         (x.SensorType == sensorType));
 
-    private static IEnumerable<ISensor> EnumerableSensors(IHardware hardware)
+    private static IEnumerable<ISensor> EnumerateSensors(IHardware hardware)
     {
         foreach (var subHardware in hardware.SubHardware)
         {
-            foreach (var sensor in EnumerableSensors(subHardware))
+            foreach (var sensor in EnumerateSensors(subHardware))
             {
                 yield return sensor;
             }
@@ -130,105 +151,38 @@ internal sealed class HardwareMonitorMetrics : IDisposable
     }
 
     //--------------------------------------------------------------------------------
-    // Battery
+    // Information
     //--------------------------------------------------------------------------------
 
-    private void SetupBatteryMeasurement()
+    private void SetupInformationMeasurement()
     {
-        var levelChargeSensor = EnumerableSensors(HardwareType.Battery, SensorType.Voltage).FirstOrDefault(static x => x.Name == "Charge Level");
-        var levelDegradationSensor = EnumerableSensors(HardwareType.Battery, SensorType.Voltage).FirstOrDefault(static x => x.Name == "Degradation Level");
-        var voltageSensor = EnumerableSensors(HardwareType.Battery, SensorType.Voltage).FirstOrDefault();
-        var currentSensor = EnumerableSensors(HardwareType.Battery, SensorType.Current).FirstOrDefault();
-        var energySensors = EnumerableSensors(HardwareType.Battery, SensorType.Energy).ToList();
-        var powerSensor = EnumerableSensors(HardwareType.Battery, SensorType.Power).FirstOrDefault();
-        var timespanSensor = EnumerableSensors(HardwareType.Battery, SensorType.TimeSpan).FirstOrDefault();
+        var list = new List<KeyValuePair<string, IHardware>>();
+        list.AddRange(EnumerateHardware(HardwareType.Cpu).Select(static x => new KeyValuePair<string, IHardware>("cpu", x)));
+        list.AddRange(EnumerateHardware(HardwareType.GpuNvidia, HardwareType.GpuAmd, HardwareType.GpuIntel).Select(static x => new KeyValuePair<string, IHardware>("gpu", x)));
+        list.AddRange(EnumerateHardware(HardwareType.Memory).Select(static x => new KeyValuePair<string, IHardware>("memory", x)));
+        list.AddRange(EnumerateHardware(HardwareType.Motherboard).Select(static x => new KeyValuePair<string, IHardware>("motherboard", x)));
+        list.AddRange(EnumerateHardware(HardwareType.SuperIO).Select(static x => new KeyValuePair<string, IHardware>("io", x)));
+        list.AddRange(EnumerateHardware(HardwareType.Battery).Select(static x => new KeyValuePair<string, IHardware>("battery", x)));
+        list.AddRange(EnumerateHardware(HardwareType.Storage).Select(static x => new KeyValuePair<string, IHardware>("storage", x)));
+        list.AddRange(EnumerateHardware(HardwareType.Network).Select(static x => new KeyValuePair<string, IHardware>("network", x)));
 
-        // Battery charge
-        if (levelChargeSensor is not null)
-        {
-            MeterInstance.CreateObservableUpDownCounter(
-                "hardware.battery.charge",
-                () => MeasureSimpleBattery(levelChargeSensor),
-                description: "Battery charge.");
-        }
-
-        // Battery degradation
-        if (levelDegradationSensor is not null)
-        {
-            MeterInstance.CreateObservableUpDownCounter(
-                "hardware.battery.degradation",
-                () => MeasureSimpleBattery(levelDegradationSensor),
-                description: "Battery degradation.");
-        }
-
-        // Battery voltage
-        if (voltageSensor is not null)
-        {
-            MeterInstance.CreateObservableUpDownCounter(
-                "hardware.battery.voltage",
-                () => MeasureSimpleBattery(voltageSensor),
-                description: "Battery voltage.");
-        }
-
-        // Battery current
-        if (currentSensor is not null)
-        {
-            MeterInstance.CreateObservableUpDownCounter(
-                "hardware.battery.current",
-                () => MeasureSimpleBattery(currentSensor),
-                description: "Battery current.");
-        }
-
-        // Battery capacity
-        if (energySensors.Count > 0)
-        {
-            MeterInstance.CreateObservableUpDownCounter(
-                "hardware.battery.capacity",
-                () => MeasureBatteryCapacity(
-                    energySensors.First(static x => x.Name == "Designed Capacity"),
-                    energySensors.First(static x => x.Name == "Full Charged Capacity"),
-                    energySensors.First(static x => x.Name == "Remaining Capacity")),
-                description: "Battery capacity.");
-        }
-
-        // Battery rate
-        if (powerSensor is not null)
-        {
-            MeterInstance.CreateObservableUpDownCounter(
-                "hardware.battery.rate",
-                () => MeasureSimpleBattery(powerSensor),
-                description: "Battery rate.");
-        }
-
-        // Battery remaining
-        if (timespanSensor is not null)
-        {
-            MeterInstance.CreateObservableUpDownCounter(
-                "hardware.battery.remaining",
-                () => MeasureSimpleBattery(timespanSensor),
-                description: "Battery remaining.");
-        }
+        MeterInstance.CreateObservableUpDownCounter(
+            "hardware.information",
+            () => MeasureInformation(list),
+            description: "Hardware information.");
     }
 
-    private Measurement<double> MeasureSimpleBattery(ISensor sensor)
+    private Measurement<double>[] MeasureInformation(List<KeyValuePair<string, IHardware>> list)
     {
-        lock (computer)
-        {
-            return new Measurement<double>(ToValue(sensor), MakeTags(sensor));
-        }
-    }
+        var values = new Measurement<double>[list.Count];
 
-    private Measurement<double>[] MeasureBatteryCapacity(ISensor designed, ISensor fullCharged, ISensor remaining)
-    {
-        lock (computer)
+        for (var i = 0; i < list.Count; i++)
         {
-            return
-            [
-                new Measurement<double>(ToValue(designed), MakeTags(designed, "designed")),
-                new Measurement<double>(ToValue(fullCharged), MakeTags(fullCharged, "full")),
-                new Measurement<double>(ToValue(remaining), MakeTags(remaining, "remaining"))
-            ];
+            var entry = list[i];
+            values[i] = new Measurement<double>(1, [new("host", host), new("type", entry.Key), new("identifier", entry.Value.Identifier), new("name", entry.Value.Name)]);
         }
+
+        return values;
     }
 
     //--------------------------------------------------------------------------------
@@ -237,20 +191,20 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private void SetupCpuMeasurement()
     {
-        var loadSensors = EnumerableSensors(HardwareType.Cpu, SensorType.Load)
+        var loadSensors = EnumerateSensors(HardwareType.Cpu, SensorType.Load)
             .Where(static x => x.Name.StartsWith("CPU Core #", StringComparison.Ordinal) || x.Name == "CPU Total")
             .ToArray();
-        var clockSensors = EnumerableSensors(HardwareType.Cpu, SensorType.Clock)
+        var clockSensors = EnumerateSensors(HardwareType.Cpu, SensorType.Clock)
             .Where(static x => !x.Name.Contains("Effective", StringComparison.Ordinal))
             .ToArray();
-        var temperatureSensors = EnumerableSensors(HardwareType.Cpu, SensorType.Temperature)
+        var temperatureSensors = EnumerateSensors(HardwareType.Cpu, SensorType.Temperature)
             .Where(static x => !x.Name.EndsWith("Distance to TjMax", StringComparison.Ordinal) &&
                                (x.Name != "Core Max") &&
                                (x.Name != "Core Average"))
             .ToArray();
-        var voltageSensors = EnumerableSensors(HardwareType.Cpu, SensorType.Voltage).ToArray();
-        var currentSensors = EnumerableSensors(HardwareType.Cpu, SensorType.Current).ToArray();
-        var powerSensors = EnumerableSensors(HardwareType.Cpu, SensorType.Power).ToArray();
+        var voltageSensors = EnumerateSensors(HardwareType.Cpu, SensorType.Voltage).ToArray();
+        var currentSensors = EnumerateSensors(HardwareType.Cpu, SensorType.Current).ToArray();
+        var powerSensors = EnumerateSensors(HardwareType.Cpu, SensorType.Power).ToArray();
 
         // CPU load
         if (loadSensors.Length > 0)
@@ -313,17 +267,17 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private void SetupGpuMeasurement()
     {
-        var loadSensors = EnumerableGpuSensors(SensorType.Load)
+        var loadSensors = EnumerateGpuSensors(SensorType.Load)
             .Where(static x => x.Name.StartsWith("GPU", StringComparison.Ordinal))
             .ToArray();
-        var clockSensors = EnumerableGpuSensors(SensorType.Clock).ToArray();
-        var fanSensors = EnumerableGpuSensors(SensorType.Fan).ToArray();
-        var temperatureSensors = EnumerableGpuSensors(SensorType.Temperature).ToArray();
-        var powerSensors = EnumerableGpuSensors(SensorType.Power).ToArray();
-        var memorySensors = EnumerableGpuSensors(SensorType.SmallData)
+        var clockSensors = EnumerateGpuSensors(SensorType.Clock).ToArray();
+        var fanSensors = EnumerateGpuSensors(SensorType.Fan).ToArray();
+        var temperatureSensors = EnumerateGpuSensors(SensorType.Temperature).ToArray();
+        var powerSensors = EnumerateGpuSensors(SensorType.Power).ToArray();
+        var memorySensors = EnumerateGpuSensors(SensorType.SmallData)
             .Where(static x => x.Name.StartsWith("GPU Memory", StringComparison.Ordinal))
             .ToArray();
-        var throughputSensors = EnumerableGpuSensors(SensorType.Throughput)
+        var throughputSensors = EnumerateGpuSensors(SensorType.Throughput)
             .Where(static x => x.Name.StartsWith("GPU PCIe", StringComparison.Ordinal))
             .ToArray();
 
@@ -422,61 +376,13 @@ internal sealed class HardwareMonitorMetrics : IDisposable
     }
 
     //--------------------------------------------------------------------------------
-    // I/O
-    //--------------------------------------------------------------------------------
-
-    private void SetupIoMeasurement()
-    {
-        var controlSensors = EnumerableSensors(HardwareType.SuperIO, SensorType.Control).ToArray();
-        var fanSensors = EnumerableSensors(HardwareType.SuperIO, SensorType.Fan).ToArray();
-        var temperatureSensors = EnumerableSensors(HardwareType.SuperIO, SensorType.Temperature).ToArray();
-        var voltageSensors = EnumerableSensors(HardwareType.SuperIO, SensorType.Voltage).ToArray();
-
-        // I/O control
-        if (controlSensors.Length > 0)
-        {
-            MeterInstance.CreateObservableUpDownCounter(
-                "hardware.io.control",
-                () => MeasureSensor(controlSensors),
-                description: "I/O control.");
-        }
-
-        // I/O fan
-        if (fanSensors.Length > 0)
-        {
-            MeterInstance.CreateObservableUpDownCounter(
-                "hardware.io.fan",
-                () => MeasureSensor(fanSensors),
-                description: "I/O fan.");
-        }
-
-        // I/O temperature
-        if (temperatureSensors.Length > 0)
-        {
-            MeterInstance.CreateObservableUpDownCounter(
-                "hardware.io.temperature",
-                () => MeasureSensor(temperatureSensors),
-                description: "I/O temperature.");
-        }
-
-        // I/O voltage
-        if (voltageSensors.Length > 0)
-        {
-            MeterInstance.CreateObservableUpDownCounter(
-                "hardware.io.voltage",
-                () => MeasureSensor(voltageSensors),
-                description: "I/O voltage.");
-        }
-    }
-
-    //--------------------------------------------------------------------------------
     // Memory
     //--------------------------------------------------------------------------------
 
     private void SetupMemoryMeasurement()
     {
-        var dataSensors = EnumerableSensors(HardwareType.Memory, SensorType.Data).ToList();
-        var loadSensors = EnumerableSensors(HardwareType.Memory, SensorType.Load).ToList();
+        var dataSensors = EnumerateSensors(HardwareType.Memory, SensorType.Data).ToList();
+        var loadSensors = EnumerateSensors(HardwareType.Memory, SensorType.Load).ToList();
 
         // Memory used
         if (dataSensors.Count > 0)
@@ -525,6 +431,156 @@ internal sealed class HardwareMonitorMetrics : IDisposable
     }
 
     //--------------------------------------------------------------------------------
+    // I/O
+    //--------------------------------------------------------------------------------
+
+    private void SetupIoMeasurement()
+    {
+        var controlSensors = EnumerateSensors(HardwareType.SuperIO, SensorType.Control).ToArray();
+        var fanSensors = EnumerateSensors(HardwareType.SuperIO, SensorType.Fan).ToArray();
+        var temperatureSensors = EnumerateSensors(HardwareType.SuperIO, SensorType.Temperature).ToArray();
+        var voltageSensors = EnumerateSensors(HardwareType.SuperIO, SensorType.Voltage).ToArray();
+
+        // I/O control
+        if (controlSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.io.control",
+                () => MeasureSensor(controlSensors),
+                description: "I/O control.");
+        }
+
+        // I/O fan
+        if (fanSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.io.fan",
+                () => MeasureSensor(fanSensors),
+                description: "I/O fan.");
+        }
+
+        // I/O temperature
+        if (temperatureSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.io.temperature",
+                () => MeasureSensor(temperatureSensors),
+                description: "I/O temperature.");
+        }
+
+        // I/O voltage
+        if (voltageSensors.Length > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.io.voltage",
+                () => MeasureSensor(voltageSensors),
+                description: "I/O voltage.");
+        }
+    }
+
+    //--------------------------------------------------------------------------------
+    // Battery
+    //--------------------------------------------------------------------------------
+
+    private void SetupBatteryMeasurement()
+    {
+        var levelChargeSensor = EnumerateSensors(HardwareType.Battery, SensorType.Voltage).FirstOrDefault(static x => x.Name == "Charge Level");
+        var levelDegradationSensor = EnumerateSensors(HardwareType.Battery, SensorType.Voltage).FirstOrDefault(static x => x.Name == "Degradation Level");
+        var voltageSensor = EnumerateSensors(HardwareType.Battery, SensorType.Voltage).FirstOrDefault();
+        var currentSensor = EnumerateSensors(HardwareType.Battery, SensorType.Current).FirstOrDefault();
+        var energySensors = EnumerateSensors(HardwareType.Battery, SensorType.Energy).ToList();
+        var powerSensor = EnumerateSensors(HardwareType.Battery, SensorType.Power).FirstOrDefault();
+        var timespanSensor = EnumerateSensors(HardwareType.Battery, SensorType.TimeSpan).FirstOrDefault();
+
+        // Battery charge
+        if (levelChargeSensor is not null)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.battery.charge",
+                () => MeasureSimpleBattery(levelChargeSensor),
+                description: "Battery charge.");
+        }
+
+        // Battery degradation
+        if (levelDegradationSensor is not null)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.battery.degradation",
+                () => MeasureSimpleBattery(levelDegradationSensor),
+                description: "Battery degradation.");
+        }
+
+        // Battery voltage
+        if (voltageSensor is not null)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.battery.voltage",
+                () => MeasureSimpleBattery(voltageSensor),
+                description: "Battery voltage.");
+        }
+
+        // Battery current
+        if (currentSensor is not null)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.battery.current",
+                () => MeasureSimpleBattery(currentSensor),
+                description: "Battery current.");
+        }
+
+        // Battery capacity
+        if (energySensors.Count > 0)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.battery.capacity",
+                () => MeasureBatteryCapacity(
+                    energySensors.First(static x => x.Name == "Designed Capacity"),
+                    energySensors.First(static x => x.Name == "Full Charged Capacity"),
+                    energySensors.First(static x => x.Name == "Remaining Capacity")),
+                description: "Battery capacity.");
+        }
+
+        // Battery rate
+        if (powerSensor is not null)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.battery.rate",
+                () => MeasureSimpleBattery(powerSensor),
+                description: "Battery rate.");
+        }
+
+        // Battery remaining
+        if (timespanSensor is not null)
+        {
+            MeterInstance.CreateObservableUpDownCounter(
+                "hardware.battery.remaining",
+                () => MeasureSimpleBattery(timespanSensor),
+                description: "Battery remaining.");
+        }
+    }
+
+    private Measurement<double> MeasureSimpleBattery(ISensor sensor)
+    {
+        lock (computer)
+        {
+            return new Measurement<double>(ToValue(sensor), MakeTags(sensor));
+        }
+    }
+
+    private Measurement<double>[] MeasureBatteryCapacity(ISensor designed, ISensor fullCharged, ISensor remaining)
+    {
+        lock (computer)
+        {
+            return
+            [
+                new Measurement<double>(ToValue(designed), MakeTags(designed, "designed")),
+                new Measurement<double>(ToValue(fullCharged), MakeTags(fullCharged, "full")),
+                new Measurement<double>(ToValue(remaining), MakeTags(remaining, "remaining"))
+            ];
+        }
+    }
+
+    //--------------------------------------------------------------------------------
     // Storage
     //--------------------------------------------------------------------------------
 
@@ -532,12 +588,12 @@ internal sealed class HardwareMonitorMetrics : IDisposable
     {
         // TODO PowerOn hours, Device power cycle count (LibreHardwareMonitorLib not supported)
 
-        var loadSensors = EnumerableSensors(HardwareType.Storage, SensorType.Load).ToList();
-        var dataSensors = EnumerableSensors(HardwareType.Storage, SensorType.Data).ToList();
-        var throughputSensors = EnumerableSensors(HardwareType.Storage, SensorType.Throughput).ToList();
-        var temperatureSensors = EnumerableSensors(HardwareType.Storage, SensorType.Temperature).ToArray();
-        var levelSensors = EnumerableSensors(HardwareType.Storage, SensorType.Level).ToList();
-        var factorSensors = EnumerableSensors(HardwareType.Storage, SensorType.Factor).ToList();
+        var loadSensors = EnumerateSensors(HardwareType.Storage, SensorType.Load).ToList();
+        var dataSensors = EnumerateSensors(HardwareType.Storage, SensorType.Data).ToList();
+        var throughputSensors = EnumerateSensors(HardwareType.Storage, SensorType.Throughput).ToList();
+        var temperatureSensors = EnumerateSensors(HardwareType.Storage, SensorType.Temperature).ToArray();
+        var levelSensors = EnumerateSensors(HardwareType.Storage, SensorType.Level).ToList();
+        var factorSensors = EnumerateSensors(HardwareType.Storage, SensorType.Factor).ToList();
 
         // Storage used
         var loadUsedSensors = loadSensors.Where(static x => x.Name == "Used Space").ToArray();
@@ -674,9 +730,9 @@ internal sealed class HardwareMonitorMetrics : IDisposable
 
     private void SetupNetworkMeasurement()
     {
-        var dataSensors = EnumerableSensors(HardwareType.Network, SensorType.Data).ToList();
-        var throughputSensors = EnumerableSensors(HardwareType.Network, SensorType.Throughput).ToList();
-        var loadSensors = EnumerableSensors(HardwareType.Network, SensorType.Load).ToArray();
+        var dataSensors = EnumerateSensors(HardwareType.Network, SensorType.Data).ToList();
+        var throughputSensors = EnumerateSensors(HardwareType.Network, SensorType.Throughput).ToList();
+        var loadSensors = EnumerateSensors(HardwareType.Network, SensorType.Load).ToArray();
 
         // Network bytes
         if (dataSensors.Count > 0)

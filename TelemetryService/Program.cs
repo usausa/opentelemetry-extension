@@ -99,7 +99,7 @@ builder.Services
             metrics.AddApplicationInstrumentation(new ApplicationOptions
             {
                 Host = host,
-                InstrumentationList = [..instrumentationList]
+                InstrumentationList = [.. instrumentationList]
             });
         }
 

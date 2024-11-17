@@ -1,6 +1,6 @@
 namespace TelemetryService.Metrics;
 
-internal class ApplicationOptions
+internal sealed class ApplicationOptions
 {
     public string Host { get; set; } = default!;
 
