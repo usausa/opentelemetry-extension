@@ -13,6 +13,7 @@ using OpenTelemetryExtension.Instrumentation.SensorOmron;
 #if WINDOWS_TELEMETRY
 using OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
 #endif
+using OpenTelemetryExtension.Instrumentation.Ping;
 using OpenTelemetryExtension.Instrumentation.WFWattch2;
 
 #pragma warning disable CA1819
@@ -38,13 +39,15 @@ public sealed class TelemetrySetting
     public bool EnablePerformanceCounterMetrics { get; set; }
 #endif
 
-    public bool EnableSensorOmronMetrics { get; set; }
+    public bool EnablePingMetrics { get; set; }
 
-    public bool EnableWFWattch2Metrics { get; set; }
+    public bool EnableSensorOmronMetrics { get; set; }
 
 #if WINDOWS_TELEMETRY
     public bool EnableSwitchBotMetrics { get; set; }
 #endif
+
+    public bool EnableWFWattch2Metrics { get; set; }
 
     // Option
 
@@ -60,12 +63,14 @@ public sealed class TelemetrySetting
     public PerformanceCounterOptions PerformanceCounter { get; set; } = new();
 #endif
 
-    public SensorOmronOptions SensorOmron { get; set; } = new();
+    public PingOptions Ping { get; set; } = new();
 
-    public WFWattch2Options WFWattch2 { get; set; } = new();
+    public SensorOmronOptions SensorOmron { get; set; } = new();
 
 #if WINDOWS_TELEMETRY
     public SwitchBotOptions SwitchBot { get; set; } = new();
 #endif
+
+    public WFWattch2Options WFWattch2 { get; set; } = new();
 }
 #pragma warning restore CA1819

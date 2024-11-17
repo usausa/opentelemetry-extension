@@ -47,9 +47,9 @@ internal sealed class DiskInfoMetrics : IDisposable
             .ToArray();
         genericHint = genericEntries.Sum(static x => x.Smart.GetSupportedIds().Count);
 
-        MeterInstance.CreateObservableUpDownCounter("smart.disk.byte_per_sector", GatherMeasurementDisk);
-        MeterInstance.CreateObservableUpDownCounter("smart.nvme.value", GatherMeasurementNvme);
-        MeterInstance.CreateObservableUpDownCounter("smart.generic.value", GatherMeasurementGeneric);
+        MeterInstance.CreateObservableUpDownCounter("smart.disk.byte_per_sector", MeasureDisk);
+        MeterInstance.CreateObservableUpDownCounter("smart.nvme.value", MeasureNvme);
+        MeterInstance.CreateObservableUpDownCounter("smart.generic.value", MeasureGeneric);
 
         timer = new Timer(Update, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(options.Interval));
     }
@@ -95,7 +95,7 @@ internal sealed class DiskInfoMetrics : IDisposable
     // Measure
     //--------------------------------------------------------------------------------
 
-    private List<Measurement<double>> GatherMeasurementDisk()
+    private List<Measurement<double>> MeasureDisk()
     {
         lock (disks)
         {
@@ -117,7 +117,7 @@ internal sealed class DiskInfoMetrics : IDisposable
         }
     }
 
-    private List<Measurement<double>> GatherMeasurementNvme()
+    private List<Measurement<double>> MeasureNvme()
     {
         lock (disks)
         {
@@ -162,7 +162,7 @@ internal sealed class DiskInfoMetrics : IDisposable
         }
     }
 
-    private List<Measurement<double>> GatherMeasurementGeneric()
+    private List<Measurement<double>> MeasureGeneric()
     {
         lock (disks)
         {

@@ -29,9 +29,9 @@ internal sealed class WFWattch2Metrics : IDisposable
 
         devices = options.Device.Select(static x => new Device(x)).ToArray();
 
-        MeterInstance.CreateObservableUpDownCounter("sensor.power", () => ToMeasurement(static x => x.Power));
-        MeterInstance.CreateObservableUpDownCounter("sensor.current", () => ToMeasurement(static x => x.Current));
-        MeterInstance.CreateObservableUpDownCounter("sensor.voltage", () => ToMeasurement(static x => x.Voltage));
+        MeterInstance.CreateObservableUpDownCounter("sensor.power", () => Measure(static x => x.Power));
+        MeterInstance.CreateObservableUpDownCounter("sensor.current", () => Measure(static x => x.Current));
+        MeterInstance.CreateObservableUpDownCounter("sensor.voltage", () => Measure(static x => x.Voltage));
 
         timer = new Timer(_ => Update(), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(options.Interval));
     }
@@ -45,11 +45,19 @@ internal sealed class WFWattch2Metrics : IDisposable
         }
     }
 
+    private void Update()
+    {
+        foreach (var device in devices)
+        {
+            _ = Task.Run(async () => await device.UpdateAsync());
+        }
+    }
+
     //--------------------------------------------------------------------------------
     // Measure
     //--------------------------------------------------------------------------------
 
-    private List<Measurement<double>> ToMeasurement(Func<Device, double?> selector)
+    private List<Measurement<double>> Measure(Func<Device, double?> selector)
     {
         var values = new List<Measurement<double>>(devices.Length);
 
@@ -64,14 +72,6 @@ internal sealed class WFWattch2Metrics : IDisposable
         }
 
         return values;
-    }
-
-    private void Update()
-    {
-        foreach (var device in devices)
-        {
-            _ = Task.Run(async () => await device.UpdateAsync());
-        }
     }
 
     //--------------------------------------------------------------------------------

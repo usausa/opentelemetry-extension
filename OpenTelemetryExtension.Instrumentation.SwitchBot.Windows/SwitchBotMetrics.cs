@@ -35,19 +35,19 @@ internal sealed class SwitchBotMetrics : IDisposable
 
         MeterInstance.CreateObservableUpDownCounter(
             "sensor.rssi",
-            () => ToMeasurement<Device>(devices.Length, static x => x.Rssi));
+            () => Measure<Device>(devices.Length, static x => x.Rssi));
         MeterInstance.CreateObservableUpDownCounter(
             "sensor.temperature",
-            () => ToMeasurement<MeterDevice>(meters, static x => x.Temperature));
+            () => Measure<MeterDevice>(meters, static x => x.Temperature));
         MeterInstance.CreateObservableUpDownCounter(
             "sensor.humidity",
-            () => ToMeasurement<MeterDevice>(meters, static x => x.Humidity));
+            () => Measure<MeterDevice>(meters, static x => x.Humidity));
         MeterInstance.CreateObservableUpDownCounter(
             "sensor.co2",
-            () => ToMeasurement<MeterDevice>(meters, static x => x.Co2));
+            () => Measure<MeterDevice>(meters, static x => x.Co2));
         MeterInstance.CreateObservableUpDownCounter(
             "sensor.power",
-            () => ToMeasurement<PlugMiniDevice>(plugs, static x => x.Power));
+            () => Measure<PlugMiniDevice>(plugs, static x => x.Power));
 
         watcher = new BluetoothLEAdvertisementWatcher
         {
@@ -77,7 +77,7 @@ internal sealed class SwitchBotMetrics : IDisposable
     // Measure
     //--------------------------------------------------------------------------------
 
-    private List<Measurement<double>> ToMeasurement<T>(int hint, Func<T, double?> selector)
+    private List<Measurement<double>> Measure<T>(int hint, Func<T, double?> selector)
         where T : Device
     {
         var values = new List<Measurement<double>>(hint);

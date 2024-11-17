@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 using OpenTelemetry.Metrics;
 using OpenTelemetry;
 
+using OpenTelemetryExtension.Instrumentation.Ping;
+
 #if WINDOWS_TELEMETRY
 using OpenTelemetryExtension.Instrumentation.DiskInfo;
 #endif
@@ -76,6 +78,12 @@ builder.Services
             instrumentationList.Add(nameof(setting.PerformanceCounter));
         }
 #endif
+        if (setting.EnablePingMetrics)
+        {
+            setting.Ping.Host = String.IsNullOrWhiteSpace(setting.Ping.Host) ? host : setting.Ping.Host;
+            metrics.AddPingInstrumentation(setting.Ping);
+            instrumentationList.Add(nameof(setting.Ping));
+        }
         if (setting.EnableSensorOmronMetrics)
         {
             metrics.AddSensorOmronInstrumentation(setting.SensorOmron);
