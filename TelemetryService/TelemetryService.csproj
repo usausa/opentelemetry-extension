@@ -44,9 +44,6 @@
     <ProjectReference Include="..\OpenTelemetryExtension.Instrumentation.SensorOmron\OpenTelemetryExtension.Instrumentation.SensorOmron.csproj" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
-    <ProjectReference Include="..\OpenTelemetryExtension.Instrumentation.SignalStrength\OpenTelemetryExtension.Instrumentation.SignalStrength.csproj" />
-  </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
     <ProjectReference Include="..\OpenTelemetryExtension.Instrumentation.SwitchBot.Windows\OpenTelemetryExtension.Instrumentation.SwitchBot.Windows.csproj" />
   </ItemGroup>
   <ItemGroup>
