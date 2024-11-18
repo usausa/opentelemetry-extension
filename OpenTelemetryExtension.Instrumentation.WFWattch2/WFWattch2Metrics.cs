@@ -1,4 +1,3 @@
-#pragma warning disable IDE0032
 namespace OpenTelemetryExtension.Instrumentation.WFWattch2;
 
 using System;
@@ -90,9 +89,11 @@ internal sealed class WFWattch2Metrics : IDisposable
 
         private readonly WattchClient client;
 
+#pragma warning disable IDE0032
         private double? power;
         private double? voltage;
         private double? current;
+#pragma warning restore IDE0032
 
         public DeviceEntry Setting { get; }
 
