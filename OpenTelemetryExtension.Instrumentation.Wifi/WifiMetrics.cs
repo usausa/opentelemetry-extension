@@ -3,13 +3,11 @@ namespace OpenTelemetryExtension.Instrumentation.Wifi;
 using System.Diagnostics.Metrics;
 using System.Reflection;
 
+using ManagedNativeWifi;
+
 using Microsoft.Extensions.Logging;
 
-// TODO
-#pragma warning disable CA1823
-// ReSharper disable NotAccessedField.Local
-// ReSharper disable UnusedMember.Local
-internal sealed class WifiMetrics : IDisposable
+internal sealed class WifiMetrics
 {
     internal static readonly AssemblyName AssemblyName = typeof(WifiMetrics).Assembly.GetName();
     internal static readonly string MeterName = AssemblyName.Name!.Replace(".Instrumentation", string.Empty, StringComparison.Ordinal);
@@ -18,6 +16,12 @@ internal sealed class WifiMetrics : IDisposable
 
     private readonly string host;
 
+    private readonly int signalThreshold;
+
+    private readonly bool knownOnly;
+
+    private readonly Dictionary<string, AccessPointEntry> knownAccessPoint;
+
     public WifiMetrics(
         ILogger<WifiMetrics> log,
         WifiOptions options)
@@ -25,24 +29,51 @@ internal sealed class WifiMetrics : IDisposable
         log.InfoMetricsEnabled(nameof(WifiMetrics));
 
         host = options.Host;
+        signalThreshold = options.SignalThreshold;
+        knownOnly = options.KnownOnly;
+        knownAccessPoint = options.KnownAccessPoint.ToDictionary(static x => NormalizeAddress(x.Address));
 
-        // TODO
+        MeterInstance.CreateObservableUpDownCounter("wifi.rssi", Measure);
     }
 
-    public void Dispose()
+    private static string NormalizeAddress(string address)
     {
-        // TODO
+        var value = Convert.ToUInt64(address.Replace(":", string.Empty, StringComparison.Ordinal).Replace("-", string.Empty, StringComparison.Ordinal), 16);
+        return $"{(value >> 48) & 0xFF:X2}:{(value >> 32) & 0xFF:X2}:{(value >> 24) & 0xFF:X2}:{(value >> 16) & 0xFF:X2}:{(value >> 8) & 0xFF:X2}:{value & 0xFF:X2}";
     }
 
     //--------------------------------------------------------------------------------
     // Measure
     //--------------------------------------------------------------------------------
 
-    // TODO
+    private KeyValuePair<string, object?>[] MakeTags(BssNetworkPack network, AccessPointEntry? entry)
+    {
+        var bssid = network.Bssid.ToString();
+        var name = entry?.Name ?? $"({bssid})";
+        return [new("host", host), new("bssid", bssid), new("band", network.Band), new("channel", network.Channel), new("name", name)];
+    }
 
-    //--------------------------------------------------------------------------------
-    // AccessPoint
-    //--------------------------------------------------------------------------------
+    private List<Measurement<double>> Measure()
+    {
+        var values = new List<Measurement<double>>();
 
-    // TODO
+        // ReSharper disable once LoopCanBeConvertedToQuery
+        foreach (var network in NativeWifi.EnumerateBssNetworks())
+        {
+            if (network.SignalStrength <= signalThreshold)
+            {
+                continue;
+            }
+
+            var entry = knownAccessPoint.Count > 0 ? knownAccessPoint.GetValueOrDefault(network.Bssid.ToString()) : null;
+            if (knownOnly && (entry is null))
+            {
+                continue;
+            }
+
+            values.Add(new Measurement<double>(network.SignalStrength, MakeTags(network, entry)));
+        }
+
+        return values;
+    }
 }
