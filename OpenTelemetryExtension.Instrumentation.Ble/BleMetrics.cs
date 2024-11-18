@@ -5,10 +5,8 @@ using System.Reflection;
 
 using Microsoft.Extensions.Logging;
 
-// TODO
-#pragma warning disable CA1823
-// ReSharper disable NotAccessedField.Local
-// ReSharper disable UnusedMember.Local
+using Windows.Devices.Bluetooth.Advertisement;
+
 internal sealed class BleMetrics : IDisposable
 {
     internal static readonly AssemblyName AssemblyName = typeof(BleMetrics).Assembly.GetName();
@@ -18,6 +16,16 @@ internal sealed class BleMetrics : IDisposable
 
     private readonly string host;
 
+    private readonly int timeThreshold;
+
+    private readonly bool knownOnly;
+
+    private readonly Dictionary<ulong, DeviceEntry> knownDevices;
+
+    private readonly SortedDictionary<ulong, Device> detectedDevice = [];
+
+    private readonly BluetoothLEAdvertisementWatcher watcher;
+
     public BleMetrics(
         ILogger<BleMetrics> log,
         BleOptions options)
@@ -25,24 +33,120 @@ internal sealed class BleMetrics : IDisposable
         log.InfoMetricsEnabled(nameof(BleMetrics));
 
         host = options.Host;
+        timeThreshold = options.TimeThreshold;
+        knownOnly = options.KnownOnly;
+        knownDevices = options.KnownDevice
+            .ToDictionary(static x => Convert.ToUInt64(x.Address.Replace(":", string.Empty, StringComparison.Ordinal).Replace("-", string.Empty, StringComparison.Ordinal), 16));
 
-        // TODO
+        MeterInstance.CreateObservableUpDownCounter("ble.rssi", Measure);
+
+        watcher = new BluetoothLEAdvertisementWatcher
+        {
+            ScanningMode = BluetoothLEScanningMode.Active
+        };
+        watcher.Received += OnWatcherReceived;
+        watcher.Start();
     }
 
     public void Dispose()
     {
-        // TODO
+        watcher.Stop();
+        watcher.Received -= OnWatcherReceived;
     }
 
     //--------------------------------------------------------------------------------
     // Measure
     //--------------------------------------------------------------------------------
 
-    // TODO
+    private KeyValuePair<string, object?>[] MakeTags(Device device)
+    {
+        var address = $"{device.Address:X12}";
+        var name = device.Setting?.Name ?? $"({address})";
+        return [new("host", host), new("address", address), new("name", name)];
+    }
+
+    private List<Measurement<double>> Measure()
+    {
+        var values = new List<Measurement<double>>();
+
+        var now = DateTime.Now;
+        lock (detectedDevice)
+        {
+            var todoRemove = default(List<ulong>);
+
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var (address, device) in detectedDevice)
+            {
+                if ((now - device.LastUpdate).TotalMilliseconds > timeThreshold)
+                {
+                    todoRemove ??= [];
+                    todoRemove.Add(address);
+                    continue;
+                }
+
+                values.Add(new Measurement<double>(device.Rssi, MakeTags(device)));
+            }
+
+            if (todoRemove is not null)
+            {
+                foreach (var address in todoRemove)
+                {
+                    detectedDevice.Remove(address);
+                }
+            }
+        }
+
+        return values;
+    }
+
+    //--------------------------------------------------------------------------------
+    // EVent
+    //--------------------------------------------------------------------------------
+
+    private void OnWatcherReceived(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs args)
+    {
+        if (args.RawSignalStrengthInDBm <= -127)
+        {
+            return;
+        }
+
+        lock (detectedDevice)
+        {
+            if (!detectedDevice.TryGetValue(args.BluetoothAddress, out var device))
+            {
+                var setting = knownDevices.Count > 0 ? knownDevices.GetValueOrDefault(args.BluetoothAddress) : null;
+                if (knownOnly && (setting is null))
+                {
+                    return;
+                }
+
+                device = new Device(args.BluetoothAddress, setting);
+                detectedDevice[args.BluetoothAddress] = device;
+            }
+
+            device.LastUpdate = DateTime.Now;
+            device.Rssi = args.RawSignalStrengthInDBm;
+        }
+    }
 
     //--------------------------------------------------------------------------------
     // Device
     //--------------------------------------------------------------------------------
 
-    // TODO
+    private sealed class Device
+    {
+        public ulong Address { get; }
+
+        public DateTime LastUpdate { get; set; }
+
+        public double Rssi { get; set; }
+
+        public DeviceEntry? Setting { get; }
+
+        public Device(ulong address, DeviceEntry? setting)
+        {
+            Address = address;
+            Setting = setting;
+        }
+    }
 }

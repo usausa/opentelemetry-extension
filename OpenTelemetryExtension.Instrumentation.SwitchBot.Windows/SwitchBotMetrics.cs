@@ -16,7 +16,7 @@ internal sealed class SwitchBotMetrics : IDisposable
 
     private static readonly Meter MeterInstance = new(MeterName, AssemblyName.Version!.ToString());
 
-    private readonly SwitchBotOptions options;
+    private readonly int timeThreshold;
 
     private readonly Device[] devices;
 
@@ -28,7 +28,7 @@ internal sealed class SwitchBotMetrics : IDisposable
     {
         log.InfoMetricsEnabled(nameof(SwitchBotMetrics));
 
-        this.options = options;
+        timeThreshold = options.TimeThreshold;
         devices = options.Device.Select(static x => CreateDevice(x)).ToArray();
         var meters = devices.Count(static x => x.Setting.Type == DeviceType.Meter);
         var plugs = devices.Count(static x => x.Setting.Type == DeviceType.PlugMini);
@@ -88,7 +88,7 @@ internal sealed class SwitchBotMetrics : IDisposable
             // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var device in devices.OfType<T>())
             {
-                if ((now - device.LastUpdate).TotalSeconds > options.TimeThreshold)
+                if ((now - device.LastUpdate).TotalMilliseconds > timeThreshold)
                 {
                     continue;
                 }

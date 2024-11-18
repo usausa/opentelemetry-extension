@@ -16,6 +16,6 @@ public sealed class BleOptions
 
     public bool KnownOnly { get; set; }
 
-    public DeviceEntry[] KnownDevice { get; set; } = default!;
+    public DeviceEntry[] KnownDevice { get; set; } = [];
 }
 #pragma warning restore CA1819
