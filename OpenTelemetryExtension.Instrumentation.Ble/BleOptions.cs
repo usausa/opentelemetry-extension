@@ -12,6 +12,8 @@ public sealed class BleOptions
 {
     public string Host { get; set; } = default!;
 
+    public int SignalThreshold { get; set; } = -127;
+
     public int TimeThreshold { get; set; } = 60_000;
 
     public bool KnownOnly { get; set; }

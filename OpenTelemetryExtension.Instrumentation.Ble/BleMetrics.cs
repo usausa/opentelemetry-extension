@@ -16,6 +16,8 @@ internal sealed class BleMetrics : IDisposable
 
     private readonly string host;
 
+    private readonly int signalThreshold;
+
     private readonly int timeThreshold;
 
     private readonly bool knownOnly;
@@ -33,6 +35,7 @@ internal sealed class BleMetrics : IDisposable
         log.InfoMetricsEnabled(nameof(BleMetrics));
 
         host = options.Host;
+        signalThreshold = options.SignalThreshold;
         timeThreshold = options.TimeThreshold;
         knownOnly = options.KnownOnly;
         knownDevices = options.KnownDevice
@@ -105,7 +108,7 @@ internal sealed class BleMetrics : IDisposable
 
     private void OnWatcherReceived(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs args)
     {
-        if (args.RawSignalStrengthInDBm <= -127)
+        if (args.RawSignalStrengthInDBm <= signalThreshold)
         {
             return;
         }
