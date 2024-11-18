@@ -77,6 +77,7 @@ internal sealed class WFWattch2Metrics : IDisposable
     // Device
     //--------------------------------------------------------------------------------
 
+#pragma warning disable IDE0032
     private sealed class Device : IDisposable
     {
         private readonly SemaphoreSlim semaphore = new(1, 1);
@@ -89,11 +90,9 @@ internal sealed class WFWattch2Metrics : IDisposable
 
         private readonly WattchClient client;
 
-#pragma warning disable IDE0032
         private double? power;
         private double? voltage;
         private double? current;
-#pragma warning restore IDE0032
 
         public DeviceEntry Setting { get; }
 
@@ -196,4 +195,5 @@ internal sealed class WFWattch2Metrics : IDisposable
             }
         }
     }
+#pragma warning restore IDE0032
 }

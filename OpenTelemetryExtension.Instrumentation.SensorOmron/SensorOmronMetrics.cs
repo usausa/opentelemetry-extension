@@ -82,6 +82,7 @@ internal sealed class SensorOmronMetrics : IDisposable
     // Device
     //--------------------------------------------------------------------------------
 
+#pragma warning disable IDE0032
     private sealed class Device : IDisposable
     {
         private readonly SemaphoreSlim semaphore = new(1, 1);
@@ -94,7 +95,6 @@ internal sealed class SensorOmronMetrics : IDisposable
 
         private readonly RbtSensorSerial sensor;
 
-#pragma warning disable IDE0032
         private double? temperature;
         private double? humidity;
         private double? light;
@@ -105,7 +105,6 @@ internal sealed class SensorOmronMetrics : IDisposable
         private double? etvoc;
         private double? eco2;
         private double? seismic;
-#pragma warning restore IDE0032
 
         public DeviceEntry Setting { get; }
 
@@ -299,4 +298,5 @@ internal sealed class SensorOmronMetrics : IDisposable
             }
         }
     }
+#pragma warning restore IDE0032
 }
