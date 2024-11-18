@@ -1,13 +1,11 @@
 namespace OpenTelemetryExtension.Instrumentation.Ping;
 
-#pragma warning disable CA1819
 public sealed class TargetEntry
 {
     public string Address { get; set; } = default!;
 
     public string? Name { get; set; }
 }
-#pragma warning restore CA1819
 
 #pragma warning disable CA1819
 public sealed class PingOptions

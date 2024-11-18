@@ -6,6 +6,9 @@ using OpenTelemetry;
 using OpenTelemetryExtension.Instrumentation.Ping;
 
 #if WINDOWS_TELEMETRY
+using OpenTelemetryExtension.Instrumentation.Ble;
+#endif
+#if WINDOWS_TELEMETRY
 using OpenTelemetryExtension.Instrumentation.DiskInfo;
 #endif
 #if WINDOWS_TELEMETRY
@@ -19,6 +22,9 @@ using OpenTelemetryExtension.Instrumentation.SensorOmron;
 using OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
 #endif
 using OpenTelemetryExtension.Instrumentation.WFWattch2;
+#if WINDOWS_TELEMETRY
+using OpenTelemetryExtension.Instrumentation.Wifi;
+#endif
 
 using Serilog;
 
@@ -54,6 +60,14 @@ builder.Services
         var host = setting.Host ?? Environment.MachineName;
         var instrumentationList = new List<string>();
 
+#if WINDOWS_TELEMETRY
+        if (setting.EnableBleMetrics)
+        {
+            setting.Ble.Host = String.IsNullOrWhiteSpace(setting.Ble.Host) ? host : setting.Ble.Host;
+            metrics.AddBleInstrumentation(setting.Ble);
+            instrumentationList.Add(nameof(setting.Ble));
+        }
+#endif
 #if WINDOWS_TELEMETRY
         if (setting.EnableHardwareMetrics)
         {
@@ -99,6 +113,14 @@ builder.Services
         {
             metrics.AddSwitchBotInstrumentation(setting.SwitchBot);
             instrumentationList.Add(nameof(setting.SwitchBot));
+        }
+#endif
+#if WINDOWS_TELEMETRY
+        if (setting.EnableWifiMetrics)
+        {
+            setting.Wifi.Host = String.IsNullOrWhiteSpace(setting.Wifi.Host) ? host : setting.Wifi.Host;
+            metrics.AddWifiInstrumentation(setting.Wifi);
+            instrumentationList.Add(nameof(setting.Wifi));
         }
 #endif
 

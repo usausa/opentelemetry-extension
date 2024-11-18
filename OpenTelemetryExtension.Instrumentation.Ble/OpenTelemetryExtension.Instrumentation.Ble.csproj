@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0-windows10.0.22000.0</TargetFrameworks>
+    <CodeAnalysisRuleSet>..\Analyzers.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>OpenTelemetryExtension.Instrumentation.SignalStrength</PackageId>
+    <Title>OpenTelemetryExtension.Instrumentation.SignalStrength</Title>
+    <Description>OpenTelemetry extension.</Description>
+    <PackageTags>opentelemetry metrics monitoring wifi bluetooth</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ManagedNativeWifi" Version="2.6.0" />
+    <PackageReference Include="OpenTelemetry" Version="1.10.0" />
+  </ItemGroup>
+
+</Project>

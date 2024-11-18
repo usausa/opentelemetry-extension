@@ -1,4 +1,4 @@
-namespace OpenTelemetryExtension.Instrumentation.SignalStrength;
+namespace OpenTelemetryExtension.Instrumentation.Wifi;
 
 using Microsoft.Extensions.Logging;
 
