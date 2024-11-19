@@ -20,7 +20,7 @@ internal sealed class WifiMetrics
 
     private readonly bool knownOnly;
 
-    private readonly Dictionary<string, AccessPointEntry> knownAccessPoint;
+    private readonly HashSet<string> knownAccessPoint;
 
     public WifiMetrics(
         ILogger<WifiMetrics> log,
@@ -31,7 +31,7 @@ internal sealed class WifiMetrics
         host = options.Host;
         signalThreshold = options.SignalThreshold;
         knownOnly = options.KnownOnly;
-        knownAccessPoint = options.KnownAccessPoint.ToDictionary(static x => NormalizeAddress(x.Address));
+        knownAccessPoint = options.KnownAccessPoint.Select(NormalizeAddress).ToHashSet();
 
         MeterInstance.CreateObservableUpDownCounter("wifi.rssi", Measure);
     }
@@ -46,11 +46,17 @@ internal sealed class WifiMetrics
     // Measure
     //--------------------------------------------------------------------------------
 
-    private KeyValuePair<string, object?>[] MakeTags(BssNetworkPack network, AccessPointEntry? entry)
+    private KeyValuePair<string, object?>[] MakeTags(BssNetworkPack network)
     {
-        var bssid = network.Bssid.ToString();
-        var name = entry?.Name ?? $"({bssid})";
-        return [new("host", host), new("bssid", bssid), new("band", network.Band), new("channel", network.Channel), new("name", name)];
+        return
+        [
+            new("host", host),
+            new("ssid", network.Ssid.ToString()),
+            new("bssid", network.Bssid.ToString()),
+            new("protocol", network.PhyType.ToProtocolName()),
+            new("band", network.Band),
+            new("channel", network.Channel)
+        ];
     }
 
     private List<Measurement<double>> Measure()
@@ -65,13 +71,12 @@ internal sealed class WifiMetrics
                 continue;
             }
 
-            var entry = knownAccessPoint.Count > 0 ? knownAccessPoint.GetValueOrDefault(network.Bssid.ToString()) : null;
-            if (knownOnly && (entry is null))
+            if (knownOnly && !knownAccessPoint.Contains(network.Bssid.ToString()))
             {
                 continue;
             }
 
-            values.Add(new Measurement<double>(network.SignalStrength, MakeTags(network, entry)));
+            values.Add(new Measurement<double>(network.SignalStrength, MakeTags(network)));
         }
 
         return values;
