@@ -19,7 +19,7 @@ using OpenTelemetryExtension.Instrumentation.PerformanceCounter;
 #endif
 using OpenTelemetryExtension.Instrumentation.SensorOmron;
 #if WINDOWS_TELEMETRY
-using OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
+using OpenTelemetryExtension.Instrumentation.SwitchBot;
 #endif
 using OpenTelemetryExtension.Instrumentation.WFWattch2;
 #if WINDOWS_TELEMETRY

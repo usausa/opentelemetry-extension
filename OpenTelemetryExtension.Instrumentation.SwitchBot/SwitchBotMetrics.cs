@@ -1,4 +1,4 @@
-namespace OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
+namespace OpenTelemetryExtension.Instrumentation.SwitchBot;
 
 using System;
 using System.Diagnostics.Metrics;

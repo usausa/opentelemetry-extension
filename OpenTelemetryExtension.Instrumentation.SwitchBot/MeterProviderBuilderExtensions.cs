@@ -1,4 +1,4 @@
-namespace OpenTelemetryExtension.Instrumentation.SwitchBot.Windows;
+namespace OpenTelemetryExtension.Instrumentation.SwitchBot;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
