@@ -80,20 +80,20 @@ internal sealed class PerformanceCounterMetrics : IDisposable
     // Measure
     //--------------------------------------------------------------------------------
 
-    private Measurement<double>[] Measure(PerformanceCounter[] counters)
+    private Measurement<float>[] Measure(PerformanceCounter[] counters)
     {
-        var measurements = new Measurement<double>[counters.Length];
+        var measurements = new Measurement<float>[counters.Length];
 
         for (var i = 0; i < counters.Length; i++)
         {
             var counter = counters[i];
             if (String.IsNullOrEmpty(counter.InstanceName))
             {
-                measurements[i] = new Measurement<double>(counter.NextValue(), new KeyValuePair<string, object?>("host", host));
+                measurements[i] = new Measurement<float>(counter.NextValue(), new KeyValuePair<string, object?>("host", host));
             }
             else
             {
-                measurements[i] = new Measurement<double>(counter.NextValue(), new("host", host), new("name", counter.InstanceName));
+                measurements[i] = new Measurement<float>(counter.NextValue(), new("host", host), new("name", counter.InstanceName));
             }
         }
 

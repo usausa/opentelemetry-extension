@@ -122,7 +122,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static double ToValue(ISensor sensor) => sensor.Value ?? 0;
+    private static float ToValue(ISensor sensor) => sensor.Value ?? 0;
 
     //--------------------------------------------------------------------------------
     // Shared
@@ -134,16 +134,16 @@ internal sealed class HardwareMonitorMetrics : IDisposable
     private KeyValuePair<string, object?>[] MakeTags(ISensor sensor, string type) =>
         [new("host", host), new("index", sensor.Index), new("hardware", sensor.Hardware.Name), new("name", sensor.Name), new("type", type)];
 
-    private Measurement<double>[] MeasureSensor(ISensor[] sensors)
+    private Measurement<float>[] MeasureSensor(ISensor[] sensors)
     {
         lock (computer)
         {
-            var values = new Measurement<double>[sensors.Length];
+            var values = new Measurement<float>[sensors.Length];
 
             for (var i = 0; i < sensors.Length; i++)
             {
                 var sensor = sensors[i];
-                values[i] = new Measurement<double>(ToValue(sensor), MakeTags(sensor));
+                values[i] = new Measurement<float>(ToValue(sensor), MakeTags(sensor));
             }
 
             return values;
@@ -172,14 +172,14 @@ internal sealed class HardwareMonitorMetrics : IDisposable
             description: "Hardware information.");
     }
 
-    private Measurement<double>[] MeasureInformation(List<KeyValuePair<string, IHardware>> list)
+    private Measurement<float>[] MeasureInformation(List<KeyValuePair<string, IHardware>> list)
     {
-        var values = new Measurement<double>[list.Count];
+        var values = new Measurement<float>[list.Count];
 
         for (var i = 0; i < list.Count; i++)
         {
             var entry = list[i];
-            values[i] = new Measurement<double>(1, [new("host", host), new("type", entry.Key), new("identifier", entry.Value.Identifier), new("name", entry.Value.Name)]);
+            values[i] = new Measurement<float>(1, [new("host", host), new("type", entry.Key), new("identifier", entry.Value.Identifier), new("name", entry.Value.Name)]);
         }
 
         return values;
@@ -350,27 +350,27 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         }
     }
 
-    private Measurement<double>[] MeasureGpu(ISensor freeMemory, ISensor usedMemory, ISensor totalMemory)
+    private Measurement<float>[] MeasureGpu(ISensor freeMemory, ISensor usedMemory, ISensor totalMemory)
     {
         lock (computer)
         {
             return
             [
-                new Measurement<double>(ToValue(freeMemory), MakeTags(freeMemory, "free")),
-                new Measurement<double>(ToValue(usedMemory), MakeTags(usedMemory, "used")),
-                new Measurement<double>(ToValue(totalMemory), MakeTags(totalMemory, "total"))
+                new Measurement<float>(ToValue(freeMemory), MakeTags(freeMemory, "free")),
+                new Measurement<float>(ToValue(usedMemory), MakeTags(usedMemory, "used")),
+                new Measurement<float>(ToValue(totalMemory), MakeTags(totalMemory, "total"))
             ];
         }
     }
 
-    private Measurement<double>[] MeasureGpu(ISensor rxThroughput, ISensor txThroughput)
+    private Measurement<float>[] MeasureGpu(ISensor rxThroughput, ISensor txThroughput)
     {
         lock (computer)
         {
             return
             [
-                new Measurement<double>(ToValue(rxThroughput), MakeTags(rxThroughput, "rx")),
-                new Measurement<double>(ToValue(txThroughput), MakeTags(txThroughput, "tx"))
+                new Measurement<float>(ToValue(rxThroughput), MakeTags(rxThroughput, "rx")),
+                new Measurement<float>(ToValue(txThroughput), MakeTags(txThroughput, "tx"))
             ];
         }
     }
@@ -418,14 +418,14 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         }
     }
 
-    private Measurement<double>[] MeasureMemory(ISensor physicalMemory, ISensor virtualMemory)
+    private Measurement<float>[] MeasureMemory(ISensor physicalMemory, ISensor virtualMemory)
     {
         lock (computer)
         {
             return
             [
-                new Measurement<double>(ToValue(physicalMemory), MakeTags(physicalMemory, "physical")),
-                new Measurement<double>(ToValue(virtualMemory), MakeTags(virtualMemory, "virtual"))
+                new Measurement<float>(ToValue(physicalMemory), MakeTags(physicalMemory, "physical")),
+                new Measurement<float>(ToValue(virtualMemory), MakeTags(virtualMemory, "virtual"))
             ];
         }
     }
@@ -559,23 +559,23 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         }
     }
 
-    private Measurement<double> MeasureSimpleBattery(ISensor sensor)
+    private Measurement<float> MeasureSimpleBattery(ISensor sensor)
     {
         lock (computer)
         {
-            return new Measurement<double>(ToValue(sensor), MakeTags(sensor));
+            return new Measurement<float>(ToValue(sensor), MakeTags(sensor));
         }
     }
 
-    private Measurement<double>[] MeasureBatteryCapacity(ISensor designed, ISensor fullCharged, ISensor remaining)
+    private Measurement<float>[] MeasureBatteryCapacity(ISensor designed, ISensor fullCharged, ISensor remaining)
     {
         lock (computer)
         {
             return
             [
-                new Measurement<double>(ToValue(designed), MakeTags(designed, "designed")),
-                new Measurement<double>(ToValue(fullCharged), MakeTags(fullCharged, "full")),
-                new Measurement<double>(ToValue(remaining), MakeTags(remaining, "remaining"))
+                new Measurement<float>(ToValue(designed), MakeTags(designed, "designed")),
+                new Measurement<float>(ToValue(fullCharged), MakeTags(fullCharged, "full")),
+                new Measurement<float>(ToValue(remaining), MakeTags(remaining, "remaining"))
             ];
         }
     }
@@ -667,56 +667,56 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         }
     }
 
-    private Measurement<double>[] MeasureStorage(ISensor[] sensors)
+    private Measurement<float>[] MeasureStorage(ISensor[] sensors)
     {
         lock (computer)
         {
-            var values = new Measurement<double>[sensors.Length];
+            var values = new Measurement<float>[sensors.Length];
 
             for (var i = 0; i < sensors.Length; i++)
             {
                 var sensor = sensors[i];
-                values[i] = new Measurement<double>(ToValue(sensor), MakeTags(sensor));
+                values[i] = new Measurement<float>(ToValue(sensor), MakeTags(sensor));
             }
 
             return values;
         }
     }
 
-    private Measurement<double>[] MeasureStorage(ISensor[] readSensors, ISensor[] writeSensors)
+    private Measurement<float>[] MeasureStorage(ISensor[] readSensors, ISensor[] writeSensors)
     {
         lock (computer)
         {
-            var values = new Measurement<double>[writeSensors.Length + readSensors.Length];
+            var values = new Measurement<float>[writeSensors.Length + readSensors.Length];
 
             for (var i = 0; i < writeSensors.Length; i++)
             {
                 var readSensor = readSensors[i];
                 var writeSensor = writeSensors[i];
-                values[i * 2] = new Measurement<double>(ToValue(readSensor), MakeTags(readSensor, "read"));
-                values[(i * 2) + 1] = new Measurement<double>(ToValue(writeSensor), MakeTags(writeSensor, "write"));
+                values[i * 2] = new Measurement<float>(ToValue(readSensor), MakeTags(readSensor, "read"));
+                values[(i * 2) + 1] = new Measurement<float>(ToValue(writeSensor), MakeTags(writeSensor, "write"));
             }
 
             return values;
         }
     }
 
-    private Measurement<double>[] MeasureStorageLife(ISensor[] sensors)
+    private Measurement<float>[] MeasureStorageLife(ISensor[] sensors)
     {
         lock (computer)
         {
-            var values = new Measurement<double>[sensors.Length];
+            var values = new Measurement<float>[sensors.Length];
 
             for (var i = 0; i < sensors.Length; i++)
             {
                 var sensor = sensors[i];
                 if (sensor.Name == "Percentage Used")
                 {
-                    values[i] = new Measurement<double>(100 - ToValue(sensor), MakeTags(sensor));
+                    values[i] = new Measurement<float>(100 - ToValue(sensor), MakeTags(sensor));
                 }
                 else
                 {
-                    values[i] = new Measurement<double>(ToValue(sensor), MakeTags(sensor));
+                    values[i] = new Measurement<float>(ToValue(sensor), MakeTags(sensor));
                 }
             }
 
@@ -766,34 +766,34 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         }
     }
 
-    private Measurement<double>[] MeasureNetwork(ISensor[] sensors)
+    private Measurement<float>[] MeasureNetwork(ISensor[] sensors)
     {
         lock (computer)
         {
-            var values = new Measurement<double>[sensors.Length];
+            var values = new Measurement<float>[sensors.Length];
 
             for (var i = 0; i < sensors.Length; i++)
             {
                 var sensor = sensors[i];
-                values[i] = new Measurement<double>(ToValue(sensor), MakeTags(sensor));
+                values[i] = new Measurement<float>(ToValue(sensor), MakeTags(sensor));
             }
 
             return values;
         }
     }
 
-    private Measurement<double>[] MeasureNetwork(ISensor[] downloadSensors, ISensor[] uploadSensors)
+    private Measurement<float>[] MeasureNetwork(ISensor[] downloadSensors, ISensor[] uploadSensors)
     {
         lock (computer)
         {
-            var values = new Measurement<double>[uploadSensors.Length + downloadSensors.Length];
+            var values = new Measurement<float>[uploadSensors.Length + downloadSensors.Length];
 
             for (var i = 0; i < uploadSensors.Length; i++)
             {
                 var downloadSensor = downloadSensors[i];
                 var uploadSensor = uploadSensors[i];
-                values[i * 2] = new Measurement<double>(ToValue(downloadSensor), MakeTags(downloadSensor, "download"));
-                values[(i * 2) + 1] = new Measurement<double>(ToValue(uploadSensor), MakeTags(uploadSensor, "upload"));
+                values[i * 2] = new Measurement<float>(ToValue(downloadSensor), MakeTags(downloadSensor, "download"));
+                values[(i * 2) + 1] = new Measurement<float>(ToValue(uploadSensor), MakeTags(uploadSensor, "upload"));
             }
 
             return values;
