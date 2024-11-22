@@ -6,10 +6,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>OpenTelemetryExtension.Instrumentation.SignalStrength</PackageId>
-    <Title>OpenTelemetryExtension.Instrumentation.SignalStrength</Title>
+    <PackageId>OpenTelemetryExtension.Instrumentation.Wifi</PackageId>
+    <Title>OpenTelemetryExtension.Instrumentation.Wifi</Title>
     <Description>OpenTelemetry extension.</Description>
-    <PackageTags>opentelemetry metrics monitoring wifi bluetooth</PackageTags>
+    <PackageTags>opentelemetry metrics monitoring wifi</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
