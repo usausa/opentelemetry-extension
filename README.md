@@ -27,7 +27,7 @@ sensor_voltage
 
 # SwitchBot Meter
 
-[![NuGet](https://img.shields.io/nuget/v/OpenTelemetryExtension.Instrumentation.SwitchBot.Windows)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.SwitchBot.Windows/)
+[![NuGet](https://img.shields.io/nuget/v/OpenTelemetryExtension.Instrumentation.SwitchBot)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.SwitchBot/)
 
 |OS|Support|
 |:----|:----|
@@ -164,6 +164,51 @@ smart_generic_value
 
 ```
 performance_* (default)
+```
+
+# Ping
+
+[![NuGet](https://img.shields.io/nuget/v/OpenTelemetryExtension.Instrumentation.Ping)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.Ping/)
+
+|OS|Support|
+|:----|:----|
+|Windows|✅|
+|Linux|✅|
+
+## Metrics
+
+```
+ping_result_time
+```
+
+# BLE signal strength
+
+[![NuGet](https://img.shields.io/nuget/v/OpenTelemetryExtension.Instrumentation.PerformanceCounter)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.PerformanceCounter/)
+
+|OS|Support|
+|:----|:----|
+|Windows|✅|
+|Linux||
+
+## WiFi signal strength
+
+```
+ble_rssi
+```
+
+# Performance Counter
+
+[![NuGet](https://img.shields.io/nuget/v/OpenTelemetryExtension.Instrumentation.Wifi)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.Wifi/)
+
+|OS|Support|
+|:----|:----|
+|Windows|✅|
+|Linux||
+
+## Metrics
+
+```
+wifi_rssi
 ```
 
 # Install
