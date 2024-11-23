@@ -22,8 +22,8 @@ internal sealed class ApplicationMetrics
 
         this.options = options;
 
-        MeterInstance.CreateObservableUpDownCounter("telemetry.service.uptime", MeasureUptime);
-        MeterInstance.CreateObservableUpDownCounter("telemetry.service.instrumentation", MeasureInstrumentation);
+        MeterInstance.CreateObservableGauge("telemetry.service.uptime", MeasureUptime);
+        MeterInstance.CreateObservableGauge("telemetry.service.instrumentation", MeasureInstrumentation);
     }
 
     private static long MeasureUptime() =>

@@ -28,9 +28,9 @@ internal sealed class WFWattch2Metrics : IDisposable
 
         devices = options.Device.Select(static x => new Device(x)).ToArray();
 
-        MeterInstance.CreateObservableUpDownCounter("sensor.power", () => Measure(static x => x.Power));
-        MeterInstance.CreateObservableUpDownCounter("sensor.current", () => Measure(static x => x.Current));
-        MeterInstance.CreateObservableUpDownCounter("sensor.voltage", () => Measure(static x => x.Voltage));
+        MeterInstance.CreateObservableGauge("sensor.power", () => Measure(static x => x.Power));
+        MeterInstance.CreateObservableGauge("sensor.current", () => Measure(static x => x.Current));
+        MeterInstance.CreateObservableGauge("sensor.voltage", () => Measure(static x => x.Voltage));
 
         timer = new Timer(_ => Update(), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(options.Interval));
     }

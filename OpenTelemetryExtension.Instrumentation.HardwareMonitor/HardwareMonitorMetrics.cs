@@ -166,7 +166,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         list.AddRange(EnumerateHardware(HardwareType.Storage).Select(static x => new KeyValuePair<string, IHardware>("storage", x)));
         list.AddRange(EnumerateHardware(HardwareType.Network).Select(static x => new KeyValuePair<string, IHardware>("network", x)));
 
-        MeterInstance.CreateObservableUpDownCounter(
+        MeterInstance.CreateObservableGauge(
             "hardware.information",
             () => MeasureInformation(list),
             description: "Hardware information.");
@@ -209,7 +209,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // CPU load
         if (loadSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.cpu.load",
                 () => MeasureSensor(loadSensors),
                 description: "CPU load.");
@@ -218,7 +218,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // CPU clock
         if (clockSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.cpu.clock",
                 () => MeasureSensor(clockSensors),
                 description: "CPU clock.");
@@ -227,7 +227,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // CPU temperature
         if (temperatureSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.cpu.temperature",
                 () => MeasureSensor(temperatureSensors),
                 description: "CPU temperature.");
@@ -236,7 +236,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // CPU voltage
         if (voltageSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.cpu.voltage",
                 () => MeasureSensor(voltageSensors),
                 description: "CPU voltage.");
@@ -245,7 +245,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // CPU current
         if (currentSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.cpu.current",
                 () => MeasureSensor(currentSensors),
                 description: "CPU current.");
@@ -254,7 +254,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // CPU power
         if (powerSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.cpu.power",
                 () => MeasureSensor(powerSensors),
                 description: "CPU power.");
@@ -284,7 +284,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // GPU load
         if (loadSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.gpu.load",
                 () => MeasureSensor(loadSensors),
                 description: "GPU load.");
@@ -293,7 +293,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // GPU clock
         if (clockSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.gpu.clock",
                 () => MeasureSensor(clockSensors),
                 description: "GPU clock.");
@@ -302,7 +302,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // GPU fan
         if (fanSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.gpu.fan",
                 () => MeasureSensor(fanSensors),
                 description: "GPU fan.");
@@ -311,7 +311,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // GPU temperature
         if (temperatureSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.gpu.temperature",
                 () => MeasureSensor(temperatureSensors),
                 description: "GPU temperature.");
@@ -320,7 +320,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // GPU power
         if (powerSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.gpu.power",
                 () => MeasureSensor(powerSensors),
                 description: "GPU power.");
@@ -329,7 +329,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // GPU memory
         if (memorySensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.gpu.memory",
                 () => MeasureGpu(
                     memorySensors.First(static x => x.Name == "GPU Memory Free"),
@@ -341,7 +341,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // GPU throughput
         if (throughputSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.gpu.throughput",
                 () => MeasureGpu(
                     throughputSensors.First(static x => x.Name == "GPU PCIe Rx"),
@@ -387,7 +387,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // Memory used
         if (dataSensors.Count > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.memory.used",
                 () => MeasureMemory(
                     dataSensors.First(static x => x.Name == "Memory Used"),
@@ -398,7 +398,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // Memory available
         if (dataSensors.Count > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.memory.available",
                 () => MeasureMemory(
                     dataSensors.First(static x => x.Name == "Memory Available"),
@@ -409,7 +409,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // Memory load
         if (loadSensors.Count > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.memory.load",
                 () => MeasureMemory(
                     loadSensors.First(static x => x.Name == "Memory"),
@@ -444,7 +444,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // I/O control
         if (controlSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.io.control",
                 () => MeasureSensor(controlSensors),
                 description: "I/O control.");
@@ -453,7 +453,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // I/O fan
         if (fanSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.io.fan",
                 () => MeasureSensor(fanSensors),
                 description: "I/O fan.");
@@ -462,7 +462,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // I/O temperature
         if (temperatureSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.io.temperature",
                 () => MeasureSensor(temperatureSensors),
                 description: "I/O temperature.");
@@ -471,7 +471,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // I/O voltage
         if (voltageSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.io.voltage",
                 () => MeasureSensor(voltageSensors),
                 description: "I/O voltage.");
@@ -495,7 +495,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // Battery charge
         if (levelChargeSensor is not null)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.battery.charge",
                 () => MeasureSimpleBattery(levelChargeSensor),
                 description: "Battery charge.");
@@ -504,7 +504,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // Battery degradation
         if (levelDegradationSensor is not null)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.battery.degradation",
                 () => MeasureSimpleBattery(levelDegradationSensor),
                 description: "Battery degradation.");
@@ -513,7 +513,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // Battery voltage
         if (voltageSensor is not null)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.battery.voltage",
                 () => MeasureSimpleBattery(voltageSensor),
                 description: "Battery voltage.");
@@ -522,7 +522,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // Battery current
         if (currentSensor is not null)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.battery.current",
                 () => MeasureSimpleBattery(currentSensor),
                 description: "Battery current.");
@@ -531,7 +531,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // Battery capacity
         if (energySensors.Count > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.battery.capacity",
                 () => MeasureBatteryCapacity(
                     energySensors.First(static x => x.Name == "Designed Capacity"),
@@ -543,7 +543,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // Battery rate
         if (powerSensor is not null)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.battery.rate",
                 () => MeasureSimpleBattery(powerSensor),
                 description: "Battery rate.");
@@ -552,7 +552,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // Battery remaining
         if (timespanSensor is not null)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.battery.remaining",
                 () => MeasureSimpleBattery(timespanSensor),
                 description: "Battery remaining.");
@@ -599,7 +599,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         var loadUsedSensors = loadSensors.Where(static x => x.Name == "Used Space").ToArray();
         if (loadUsedSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.storage.used",
                 () => MeasureStorage(loadUsedSensors),
                 description: "Storage used.");
@@ -610,7 +610,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         var dataWriteSensors = dataSensors.Where(static x => x.Name == "Data Written").ToArray();
         if ((dataReadSensors.Length > 0) || (dataWriteSensors.Length > 0))
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.storage.bytes",
                 () => MeasureStorage(dataReadSensors, dataWriteSensors),
                 description: "Storage bytes.");
@@ -619,7 +619,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // Storage speed
         if (throughputSensors.Count > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.storage.speed",
                 () => MeasureStorage(
                     throughputSensors.Where(static x => x.Name == "Read Rate").ToArray(),
@@ -630,7 +630,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // Storage temperature
         if (temperatureSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.storage.temperature",
                 () => MeasureStorage(temperatureSensors),
                 description: "Storage temperature.");
@@ -640,7 +640,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         var levelLifeSensors = levelSensors.Where(static x => (x.Name == "Percentage Used") || (x.Name == "Remaining Life")).ToArray();
         if (levelLifeSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.storage.life",
                 () => MeasureStorageLife(levelLifeSensors),
                 description: "Storage life.");
@@ -650,7 +650,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         var factorAmplificationSensors = factorSensors.Where(static x => x.Name == "Write Amplification").ToArray();
         if (factorAmplificationSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.storage.amplification",
                 () => MeasureStorageLife(factorAmplificationSensors),
                 description: "Storage amplification.");
@@ -660,7 +660,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         var levelSpareSensors = levelSensors.Where(static x => x.Name == "Available Spare").ToArray();
         if (levelSpareSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.storage.spare",
                 () => MeasureStorageLife(levelSpareSensors),
                 description: "Storage spare.");
@@ -748,7 +748,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // Network speed
         if (throughputSensors.Count > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.network.speed",
                 () => MeasureNetwork(
                     throughputSensors.Where(static x => x.Name == "Download Speed").ToArray(),
@@ -759,7 +759,7 @@ internal sealed class HardwareMonitorMetrics : IDisposable
         // Network load
         if (loadSensors.Length > 0)
         {
-            MeterInstance.CreateObservableUpDownCounter(
+            MeterInstance.CreateObservableGauge(
                 "hardware.network.load",
                 () => MeasureNetwork(loadSensors),
                 description: "Network load.");

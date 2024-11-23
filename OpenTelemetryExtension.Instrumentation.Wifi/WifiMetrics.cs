@@ -33,7 +33,7 @@ internal sealed class WifiMetrics
         knownOnly = options.KnownOnly;
         knownAccessPoint = options.KnownAccessPoint.Select(NormalizeAddress).ToHashSet();
 
-        MeterInstance.CreateObservableUpDownCounter("wifi.rssi", Measure);
+        MeterInstance.CreateObservableGauge("wifi.rssi", Measure);
     }
 
     private static string NormalizeAddress(string address)

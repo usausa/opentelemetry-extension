@@ -41,7 +41,7 @@ internal sealed class BleMetrics : IDisposable
         knownDevices = options.KnownDevice
             .ToDictionary(static x => Convert.ToUInt64(x.Address.Replace(":", string.Empty, StringComparison.Ordinal).Replace("-", string.Empty, StringComparison.Ordinal), 16));
 
-        MeterInstance.CreateObservableUpDownCounter("ble.rssi", Measure);
+        MeterInstance.CreateObservableGauge("ble.rssi", Measure);
 
         watcher = new BluetoothLEAdvertisementWatcher
         {

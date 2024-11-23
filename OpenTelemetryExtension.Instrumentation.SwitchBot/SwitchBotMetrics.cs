@@ -33,19 +33,19 @@ internal sealed class SwitchBotMetrics : IDisposable
         var meters = devices.Count(static x => x.Setting.Type == DeviceType.Meter);
         var plugs = devices.Count(static x => x.Setting.Type == DeviceType.PlugMini);
 
-        MeterInstance.CreateObservableUpDownCounter(
+        MeterInstance.CreateObservableGauge(
             "sensor.rssi",
             () => Measure<Device>(devices.Length, static x => x.Rssi));
-        MeterInstance.CreateObservableUpDownCounter(
+        MeterInstance.CreateObservableGauge(
             "sensor.temperature",
             () => Measure<MeterDevice>(meters, static x => x.Temperature));
-        MeterInstance.CreateObservableUpDownCounter(
+        MeterInstance.CreateObservableGauge(
             "sensor.humidity",
             () => Measure<MeterDevice>(meters, static x => x.Humidity));
-        MeterInstance.CreateObservableUpDownCounter(
+        MeterInstance.CreateObservableGauge(
             "sensor.co2",
             () => Measure<MeterDevice>(meters, static x => x.Co2));
-        MeterInstance.CreateObservableUpDownCounter(
+        MeterInstance.CreateObservableGauge(
             "sensor.power",
             () => Measure<PlugMiniDevice>(plugs, static x => x.Power));
 

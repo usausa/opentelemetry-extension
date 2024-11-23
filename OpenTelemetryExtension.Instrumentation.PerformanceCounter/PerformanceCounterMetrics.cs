@@ -33,7 +33,7 @@ internal sealed class PerformanceCounterMetrics : IDisposable
                 counter.NextValue();
             }
 
-            MeterInstance.CreateObservableUpDownCounter($"{options.Prefix}.{entry.Name}", () => Measure(counters));
+            MeterInstance.CreateObservableGauge($"{options.Prefix}.{entry.Name}", () => Measure(counters));
 
             disposables.AddRange(counters);
         }

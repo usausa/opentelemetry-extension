@@ -47,9 +47,9 @@ internal sealed class DiskInfoMetrics : IDisposable
             .ToArray();
         genericHint = genericEntries.Sum(static x => x.Smart.GetSupportedIds().Count);
 
-        MeterInstance.CreateObservableUpDownCounter("smart.disk.byte_per_sector", MeasureDisk);
-        MeterInstance.CreateObservableUpDownCounter("smart.nvme.value", MeasureNvme);
-        MeterInstance.CreateObservableUpDownCounter("smart.generic.value", MeasureGeneric);
+        MeterInstance.CreateObservableGauge("smart.disk.byte_per_sector", MeasureDisk);
+        MeterInstance.CreateObservableGauge("smart.nvme.value", MeasureNvme);
+        MeterInstance.CreateObservableGauge("smart.generic.value", MeasureGeneric);
 
         timer = new Timer(Update, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(options.Interval));
     }

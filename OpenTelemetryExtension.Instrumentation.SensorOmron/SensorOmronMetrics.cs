@@ -26,16 +26,16 @@ internal sealed class SensorOmronMetrics : IDisposable
 
         devices = options.Device.Select(static x => new Device(x)).ToArray();
 
-        MeterInstance.CreateObservableUpDownCounter("sensor.temperature", () => Measure(static x => x.Temperature));
-        MeterInstance.CreateObservableUpDownCounter("sensor.humidity", () => Measure(static x => x.Humidity));
-        MeterInstance.CreateObservableUpDownCounter("sensor.light", () => Measure(static x => x.Light));
-        MeterInstance.CreateObservableUpDownCounter("sensor.pressure", () => Measure(static x => x.Pressure));
-        MeterInstance.CreateObservableUpDownCounter("sensor.noise", () => Measure(static x => x.Noise));
-        MeterInstance.CreateObservableUpDownCounter("sensor.discomfort", () => Measure(static x => x.Discomfort));
-        MeterInstance.CreateObservableUpDownCounter("sensor.heat", () => Measure(static x => x.Heat));
-        MeterInstance.CreateObservableUpDownCounter("sensor.tvoc", () => Measure(static x => x.Etvoc));
-        MeterInstance.CreateObservableUpDownCounter("sensor.co2", () => Measure(static x => x.Eco2));
-        MeterInstance.CreateObservableUpDownCounter("sensor.seismic", () => Measure(static x => x.Seismic));
+        MeterInstance.CreateObservableGauge("sensor.temperature", () => Measure(static x => x.Temperature));
+        MeterInstance.CreateObservableGauge("sensor.humidity", () => Measure(static x => x.Humidity));
+        MeterInstance.CreateObservableGauge("sensor.light", () => Measure(static x => x.Light));
+        MeterInstance.CreateObservableGauge("sensor.pressure", () => Measure(static x => x.Pressure));
+        MeterInstance.CreateObservableGauge("sensor.noise", () => Measure(static x => x.Noise));
+        MeterInstance.CreateObservableGauge("sensor.discomfort", () => Measure(static x => x.Discomfort));
+        MeterInstance.CreateObservableGauge("sensor.heat", () => Measure(static x => x.Heat));
+        MeterInstance.CreateObservableGauge("sensor.tvoc", () => Measure(static x => x.Etvoc));
+        MeterInstance.CreateObservableGauge("sensor.co2", () => Measure(static x => x.Eco2));
+        MeterInstance.CreateObservableGauge("sensor.seismic", () => Measure(static x => x.Seismic));
 
         timer = new Timer(_ => Update(), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(options.Interval));
     }

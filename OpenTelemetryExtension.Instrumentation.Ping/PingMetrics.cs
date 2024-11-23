@@ -30,7 +30,7 @@ internal sealed class PingMetrics : IDisposable
 
         targets = options.Target.Select(x => new Target(options.Timeout, x)).ToArray();
 
-        MeterInstance.CreateObservableUpDownCounter("ping.result.time", Measure);
+        MeterInstance.CreateObservableGauge("ping.result.time", Measure);
 
         timer = new Timer(_ => Update(), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(options.Interval));
     }
