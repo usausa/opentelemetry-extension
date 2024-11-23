@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0-windows</TargetFrameworks>
+    <CodeAnalysisRuleSet>..\Analyzers.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>OpenTelemetryExtension.Instrumentation.HyperV</PackageId>
+    <Title>OpenTelemetryExtension.Instrumentation.HyperV</Title>
+    <Description>OpenTelemetry extension.</Description>
+    <PackageTags>opentelemetry metrics monitoring telemetry hyperv</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenTelemetry" Version="1.10.0" />
+    <PackageReference Include="System.Management" Version="9.0.0" />
+  </ItemGroup>
+
+</Project>

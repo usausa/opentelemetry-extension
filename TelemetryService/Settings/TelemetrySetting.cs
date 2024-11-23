@@ -10,6 +10,9 @@ using OpenTelemetryExtension.Instrumentation.DiskInfo;
 using OpenTelemetryExtension.Instrumentation.HardwareMonitor;
 #endif
 #if WINDOWS_TELEMETRY
+using OpenTelemetryExtension.Instrumentation.HyperV;
+#endif
+#if WINDOWS_TELEMETRY
 using OpenTelemetryExtension.Instrumentation.PerformanceCounter;
 #endif
 using OpenTelemetryExtension.Instrumentation.SensorOmron;
@@ -52,9 +55,17 @@ public sealed class TelemetrySetting
     // HardwareMonitor
 
 #if WINDOWS_TELEMETRY
-    public bool EnableHardwareMetrics { get; set; }
+    public bool EnableHardwareMonitorMetrics { get; set; }
 
     public HardwareMonitorOptions HardwareMonitor { get; set; } = new();
+#endif
+
+    // HardwareMonitor
+
+#if WINDOWS_TELEMETRY
+    public bool EnableHyperVMetrics { get; set; }
+
+    public HyperVOptions HyperV { get; set; } = new();
 #endif
 
     // PerformanceCounter

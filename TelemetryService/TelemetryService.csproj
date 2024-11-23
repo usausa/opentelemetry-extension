@@ -35,6 +35,9 @@
     <ProjectReference Include="..\OpenTelemetryExtension.Instrumentation.HardwareMonitor\OpenTelemetryExtension.Instrumentation.HardwareMonitor.csproj" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
+    <ProjectReference Include="..\OpenTelemetryExtension.Instrumentation.HyperV\OpenTelemetryExtension.Instrumentation.HyperV.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
     <ProjectReference Include="..\OpenTelemetryExtension.Instrumentation.PerformanceCounter\OpenTelemetryExtension.Instrumentation.PerformanceCounter.csproj" />
   </ItemGroup>
   <ItemGroup>

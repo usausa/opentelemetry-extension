@@ -26,8 +26,8 @@ internal sealed class ApplicationMetrics
         MeterInstance.CreateObservableGauge("telemetry.service.instrumentation", MeasureInstrumentation);
     }
 
-    private static long MeasureUptime() =>
-        (long)(DateTime.Now - Process.GetCurrentProcess().StartTime).TotalSeconds;
+    private Measurement<long> MeasureUptime() =>
+        new((long)(DateTime.Now - Process.GetCurrentProcess().StartTime).TotalSeconds, new KeyValuePair<string, object?>("host", options.Host));
 
     private Measurement<double>[] MeasureInstrumentation()
     {

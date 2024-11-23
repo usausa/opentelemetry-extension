@@ -15,6 +15,9 @@ using OpenTelemetryExtension.Instrumentation.DiskInfo;
 using OpenTelemetryExtension.Instrumentation.HardwareMonitor;
 #endif
 #if WINDOWS_TELEMETRY
+using OpenTelemetryExtension.Instrumentation.HyperV;
+#endif
+#if WINDOWS_TELEMETRY
 using OpenTelemetryExtension.Instrumentation.PerformanceCounter;
 #endif
 using OpenTelemetryExtension.Instrumentation.SensorOmron;
@@ -69,7 +72,15 @@ builder.Services
         }
 #endif
 #if WINDOWS_TELEMETRY
-        if (setting.EnableHardwareMetrics)
+        if (setting.EnableDiskInfoMetrics)
+        {
+            setting.DiskInfo.Host = String.IsNullOrWhiteSpace(setting.DiskInfo.Host) ? host : setting.DiskInfo.Host;
+            metrics.AddDiskInfoInstrumentation(setting.DiskInfo);
+            instrumentationList.Add(nameof(setting.DiskInfo));
+        }
+#endif
+#if WINDOWS_TELEMETRY
+        if (setting.EnableHardwareMonitorMetrics)
         {
             setting.HardwareMonitor.Host = String.IsNullOrWhiteSpace(setting.HardwareMonitor.Host) ? host : setting.HardwareMonitor.Host;
             metrics.AddHardwareMonitorInstrumentation(setting.HardwareMonitor);
@@ -77,11 +88,11 @@ builder.Services
         }
 #endif
 #if WINDOWS_TELEMETRY
-        if (setting.EnableDiskInfoMetrics)
+        if (setting.EnableHyperVMetrics)
         {
-            setting.DiskInfo.Host = String.IsNullOrWhiteSpace(setting.DiskInfo.Host) ? host : setting.DiskInfo.Host;
-            metrics.AddDiskInfoInstrumentation(setting.DiskInfo);
-            instrumentationList.Add(nameof(setting.DiskInfo));
+            setting.HyperV.Host = String.IsNullOrWhiteSpace(setting.HyperV.Host) ? host : setting.HyperV.Host;
+            metrics.AddHyperVInstrumentation(setting.HyperV);
+            instrumentationList.Add(nameof(setting.HyperV));
         }
 #endif
 #if WINDOWS_TELEMETRY
