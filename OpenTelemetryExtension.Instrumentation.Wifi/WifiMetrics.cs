@@ -20,7 +20,7 @@ internal sealed class WifiMetrics
 
     private readonly bool knownOnly;
 
-    private readonly HashSet<string> knownAccessPoint;
+    private readonly HashSet<string> knownAccessPoints;
 
     public WifiMetrics(
         ILogger<WifiMetrics> log,
@@ -31,7 +31,7 @@ internal sealed class WifiMetrics
         host = options.Host;
         signalThreshold = options.SignalThreshold;
         knownOnly = options.KnownOnly;
-        knownAccessPoint = options.KnownAccessPoint.Select(NormalizeAddress).ToHashSet();
+        knownAccessPoints = options.KnownAccessPoint.Select(NormalizeAddress).ToHashSet();
 
         MeterInstance.CreateObservableGauge("wifi.rssi", Measure);
     }
@@ -71,7 +71,7 @@ internal sealed class WifiMetrics
                 continue;
             }
 
-            if (knownOnly && !knownAccessPoint.Contains(network.Bssid.ToString()))
+            if (knownOnly && !knownAccessPoints.Contains(network.Bssid.ToString()))
             {
                 continue;
             }

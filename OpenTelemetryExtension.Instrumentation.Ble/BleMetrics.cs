@@ -24,7 +24,7 @@ internal sealed class BleMetrics : IDisposable
 
     private readonly Dictionary<ulong, DeviceEntry> knownDevices;
 
-    private readonly SortedDictionary<ulong, Device> detectedDevice = [];
+    private readonly SortedDictionary<ulong, Device> detectedDevices = [];
 
     private readonly BluetoothLEAdvertisementWatcher watcher;
 
@@ -73,12 +73,12 @@ internal sealed class BleMetrics : IDisposable
         var values = new List<Measurement<double>>();
 
         var now = DateTime.Now;
-        lock (detectedDevice)
+        lock (detectedDevices)
         {
             var todoRemove = default(List<ulong>);
 
             // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var (address, device) in detectedDevice)
+            foreach (var (address, device) in detectedDevices)
             {
                 if ((now - device.LastUpdate).TotalMilliseconds > timeThreshold)
                 {
@@ -94,7 +94,7 @@ internal sealed class BleMetrics : IDisposable
             {
                 foreach (var address in todoRemove)
                 {
-                    detectedDevice.Remove(address);
+                    detectedDevices.Remove(address);
                 }
             }
         }
@@ -113,9 +113,9 @@ internal sealed class BleMetrics : IDisposable
             return;
         }
 
-        lock (detectedDevice)
+        lock (detectedDevices)
         {
-            if (!detectedDevice.TryGetValue(args.BluetoothAddress, out var device))
+            if (!detectedDevices.TryGetValue(args.BluetoothAddress, out var device))
             {
                 var setting = knownDevices.Count > 0 ? knownDevices.GetValueOrDefault(args.BluetoothAddress) : null;
                 if (knownOnly && (setting is null))
@@ -124,7 +124,7 @@ internal sealed class BleMetrics : IDisposable
                 }
 
                 device = new Device(args.BluetoothAddress, setting);
-                detectedDevice[args.BluetoothAddress] = device;
+                detectedDevices[args.BluetoothAddress] = device;
             }
 
             device.LastUpdate = DateTime.Now;
