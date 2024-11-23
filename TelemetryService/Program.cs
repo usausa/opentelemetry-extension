@@ -147,6 +147,7 @@ builder.Services
         metrics.AddPrometheusHttpListener(options =>
         {
             options.UriPrefixes = setting.EndPoints;
+            options.DisableTotalNameSuffixForCounters = true;
         });
         if (useOtlpExporter)
         {
