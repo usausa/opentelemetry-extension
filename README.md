@@ -166,6 +166,26 @@ smart_generic_value
 performance_* (default)
 ```
 
+# Hyper-V
+
+[![NuGet](https://img.shields.io/nuget/v/OpenTelemetryExtension.Instrumentation.HyperV)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.HyperV/)
+
+|OS|Support|
+|:----|:----|
+|Windows|✅|
+|Linux||
+
+## Metrics
+
+```
+hyperv_vm_count
+hyperv_vm_information
+hyperv_vm_state
+hyperv_vm_processor_load
+hyperv_vm_memory_usage
+hyperv_vm_uptime
+```
+
 # Ping
 
 [![NuGet](https://img.shields.io/nuget/v/OpenTelemetryExtension.Instrumentation.Ping)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.Ping/)
