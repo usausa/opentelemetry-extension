@@ -1,3 +1,7 @@
+# Please use this from now on
+
+- [prometheus-exporter-alternative](https://github.com/usausa/prometheus-exporter-alternative)
+
 # Telemetry Service
 
 - Multiple metrics monitoring service
@@ -210,13 +214,13 @@ ping_result_time
 |Windows|✅|
 |Linux||
 
-## WiFi signal strength
+## Metrics
 
 ```
 ble_rssi
 ```
 
-# Performance Counter
+# WiFi signal strength
 
 [![NuGet](https://img.shields.io/nuget/v/OpenTelemetryExtension.Instrumentation.Wifi)](https://www.nuget.org/packages/OpenTelemetryExtension.Instrumentation.Wifi/)
 
